@@ -331,9 +331,9 @@ table.mc-table .team-cell .tname small{display:block; font-weight:400; color:var
     <div class="mc-header">
       <div class="mc-heading">
         <div class="panel-title" style="margin:0;"><span class="dot" style="background:var(--gold);"></span>Simulación Monte Carlo</div>
-        <div class="mc-desc">Ejecuta <b>500k simulaciones</b> de las partidas que aún no estén decididas. El resultado es la <b>probabilidad de cada equipo de terminar en cada posición</b> bajo ese escenario.</div>
+        <div class="mc-desc">Ejecuta <b>100K simulaciones</b> de las partidas que aún no estén decididas. El resultado es la <b>probabilidad de cada equipo de terminar en cada posición</b> bajo ese escenario.</div>
       </div>
-      <button class="mc-btn" id="mcRunBtn">🎲 Ejecutar 500k simulaciones</button>
+      <button class="mc-btn" id="mcRunBtn">🎲 Ejecutar 100K simulaciones</button>
     </div>
     <div class="mc-status" id="mcStatus"></div>
     <div class="mc-results" id="mcResultsWrap">
@@ -345,13 +345,13 @@ table.mc-table .team-cell .tname small{display:block; font-weight:400; color:var
         <span><i style="background:rgba(108,140,255,0.55)"></i> Zona Playoffs (1º–6º)</span>
         <span><i style="background:rgba(255,93,93,0.35)"></i> Fuera de Playoffs (7º–10º)</span>
         <span>Tono más intenso = mayor probabilidad</span>
-        <span>«—» = 0% en 500k simulaciones</span>
+        <span>«—» = 0% en 100K simulaciones</span>
       </div>
     </div>
   </div>
 
   <footer class="note">
-    <b>Cómo funciona:</b> las partidas marcadas con la etiqueta verde <b>JUGADA</b> ya se disputaron y muestran el resultado real (fuente: Leaguepedia / cobertura oficial LEC), pero puedes pulsarlas igualmente si quieres explorar un escenario hipotético alternativo. Para las partidas futuras, pulsa sobre un equipo para marcarlo ganador (por defecto 2-0, ajustable a 2-1) y observa cómo cambia la clasificación en directo. Tus elecciones se guardan automáticamente. El bloque de <b>Simulación Monte Carlo</b> respeta todo lo que fijes a mano: si marcas, por ejemplo, que un equipo gana todos sus partidos restantes, las 500k simulaciones darán ese resultado por hecho y solo sortearán las partidas que dejes sin decidir. Usa «↺ Restablecer a resultados reales» para quitar tus condiciones antes de simular un escenario totalmente libre.
+    <b>Cómo funciona:</b> las partidas marcadas con la etiqueta verde <b>JUGADA</b> ya se disputaron y muestran el resultado real (fuente: Leaguepedia / cobertura oficial LEC), pero puedes pulsarlas igualmente si quieres explorar un escenario hipotético alternativo. Para las partidas futuras, pulsa sobre un equipo para marcarlo ganador (por defecto 2-0, ajustable a 2-1) y observa cómo cambia la clasificación en directo. Tus elecciones se guardan automáticamente. El bloque de <b>Simulación Monte Carlo</b> respeta todo lo que fijes a mano: si marcas, por ejemplo, que un equipo gana todos sus partidos restantes, las 100K simulaciones darán ese resultado por hecho y solo sortearán las partidas que dejes sin decidir. Usa «↺ Restablecer a resultados reales» para quitar tus condiciones antes de simular un escenario totalmente libre.
   </footer>
 </div>
 
@@ -616,7 +616,7 @@ function simulateOneScenario(fixedPicks){
 
 function runMonteCarlo(n){
   // Congelamos el estado de "picks" (reales + manuales) al momento de pulsar el botón,
-  // para que las 500k simulaciones sean consistentes con lo que el usuario ve en pantalla.
+  // para que las 100K simulaciones sean consistentes con lo que el usuario ve en pantalla.
   const fixedPicks = JSON.parse(JSON.stringify(picks));
   const fixedCount = Object.keys(fixedPicks).length;
   const counts = {};
@@ -862,13 +862,13 @@ document.getElementById('mcRunBtn').addEventListener('click', ()=>{
   const btn = document.getElementById('mcRunBtn');
   btn.disabled = true;
   const originalLabel = btn.textContent;
-  btn.textContent = '⏳ Simulando 500k escenarios...';
+  btn.textContent = '⏳ Simulando 100K escenarios...';
   const lockedNow = Object.keys(picks).length;
   document.getElementById('mcStatus').textContent = 'Calculando con ' + lockedNow + ' partidas fijadas... esto tarda un instante.';
   setTimeout(()=>{
-    runMonteCarlo(500000);
+    runMonteCarlo(100000);
     btn.disabled = false;
-    btn.textContent = '🔁 Repetir 500k simulaciones';
+    btn.textContent = '🔁 Repetir 100K simulaciones';
   }, 30);
 });
 
