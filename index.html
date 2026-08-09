@@ -257,7 +257,7 @@ table.mc-table .team-cell .tname small{display:block; font-weight:400; color:var
   <header class="top">
     <div class="eyebrow">LEC · 2026 SUMMER SPLIT</div>
     <h1>Simulador de <span>Clasificación</span></h1>
-    <div class="subtitle">BY @lulopezapa</div> 
+    <div class="subtitle">By: @lulopezapa</div>
     <div class="subtitle">Calendario real de la fase regular (single round robin, Bo3, 10 equipos, 45 partidas). Las <b>18 partidas ya disputadas hasta el 8 de agosto</b> están precargadas con su resultado real; el resto puedes decidirlo tú para ver cómo queda la tabla en cada escenario. Los 6 primeros clasifican a Playoffs.</div>
   </header>
 
@@ -297,7 +297,25 @@ table.mc-table .team-cell .tname small{display:block; font-weight:400; color:var
         <span><span class="arrow down">▼</span> Baja desde tu última elección</span>
       </div>
       <div style="font-size:11px; color:var(--text-dim); padding:0 4px 12px; line-height:1.5;">
-        Criterio de desempate: victorias → <b style="color:var(--text)">enfrentamiento directo</b> (si el empate es solo entre 2 equipos) → diferencial de mapas → mapas ganados.
+        Criterio de desempate (Reglamento LEC v3.1, secciones 6.6 y 6.7):
+      </div>
+      <div style="font-size:11px; color:var(--text-dim); padding:0 4px 12px; line-height:1.5;">
+      → victorias
+      </div>
+      <div style="font-size:11px; color:var(--text-dim); padding:0 4px 12px; line-height:1.5;">
+      → <b style="color:var(--text)">enfrentamiento directo</b> (entre los equipos empatados) 
+      </div>
+      <div style="font-size:11px; color:var(--text-dim); padding:0 4px 12px; line-height:1.5;">
+      → % de mapas ganados en el enfrentamiento directo 
+      </div>
+      <div style="font-size:11px; color:var(--text-dim); padding:0 4px 12px; line-height:1.5;">
+      → <b style="color:var(--text)">Strength of Victory</b> por victorias 
+      </div>
+      <div style="font-size:11px; color:var(--text-dim); padding:0 4px 12px; line-height:1.5;">
+      → SoV por mapas ganados 
+      </div>
+      <div style="font-size:11px; color:var(--text-dim); padding:0 4px 12px; line-height:1.5;">
+      → clasificación de Spring Split (no modelada en este simulador; se resuelve alfabéticamente si llega a este punto).
       </div>
     </div>
 
@@ -313,9 +331,9 @@ table.mc-table .team-cell .tname small{display:block; font-weight:400; color:var
     <div class="mc-header">
       <div class="mc-heading">
         <div class="panel-title" style="margin:0;"><span class="dot" style="background:var(--gold);"></span>Simulación Monte Carlo</div>
-        <div class="mc-desc">Ejecuta <b>1M simulaciones</b> de las partidas que aún no estén decididas. Las partidas ya jugadas <b>y las que hayas marcado tú a mano</b> en el tablero de arriba (por ejemplo, hacer que un equipo gane todos sus partidos restantes) se mantienen fijas en las 1M simulaciones; solo se sortea al azar el resto. El resultado es la <b>probabilidad de cada equipo de terminar en cada posición</b> bajo ese escenario.</div>
+        <div class="mc-desc">Ejecuta <b>300k simulaciones</b> de las partidas que aún no estén decididas. Las partidas ya jugadas <b>y las que hayas marcado tú a mano</b> en el tablero de arriba (por ejemplo, hacer que un equipo gane todos sus partidos restantes) se mantienen fijas en las 300k simulaciones; solo se sortea al azar el resto. El resultado es la <b>probabilidad de cada equipo de terminar en cada posición</b> bajo ese escenario.</div>
       </div>
-      <button class="mc-btn" id="mcRunBtn">🎲 Ejecutar 1M simulaciones</button>
+      <button class="mc-btn" id="mcRunBtn">🎲 Ejecutar 300k simulaciones</button>
     </div>
     <div class="mc-status" id="mcStatus"></div>
     <div class="mc-results" id="mcResultsWrap">
@@ -327,13 +345,13 @@ table.mc-table .team-cell .tname small{display:block; font-weight:400; color:var
         <span><i style="background:rgba(108,140,255,0.55)"></i> Zona Playoffs (1º–6º)</span>
         <span><i style="background:rgba(255,93,93,0.35)"></i> Fuera de Playoffs (7º–10º)</span>
         <span>Tono más intenso = mayor probabilidad</span>
-        <span>«—» = 0% en 1M simulaciones</span>
+        <span>«—» = 0% en 300k simulaciones</span>
       </div>
     </div>
   </div>
 
   <footer class="note">
-    <b>Cómo funciona:</b> las partidas marcadas con la etiqueta verde <b>JUGADA</b> ya se disputaron y muestran el resultado real (fuente: Leaguepedia / cobertura oficial LEC), pero puedes pulsarlas igualmente si quieres explorar un escenario hipotético alternativo. Para las partidas futuras, pulsa sobre un equipo para marcarlo ganador (por defecto 2-0, ajustable a 2-1) y observa cómo cambia la clasificación en directo. Tus elecciones se guardan automáticamente. El bloque de <b>Simulación Monte Carlo</b> respeta todo lo que fijes a mano: si marcas, por ejemplo, que un equipo gana todos sus partidos restantes, las 1M simulaciones darán ese resultado por hecho y solo sortearán las partidas que dejes sin decidir. Usa «↺ Restablecer a resultados reales» para quitar tus condiciones antes de simular un escenario totalmente libre.
+    <b>Cómo funciona:</b> las partidas marcadas con la etiqueta verde <b>JUGADA</b> ya se disputaron y muestran el resultado real (fuente: Leaguepedia / cobertura oficial LEC), pero puedes pulsarlas igualmente si quieres explorar un escenario hipotético alternativo. Para las partidas futuras, pulsa sobre un equipo para marcarlo ganador (por defecto 2-0, ajustable a 2-1) y observa cómo cambia la clasificación en directo. Tus elecciones se guardan automáticamente. El bloque de <b>Simulación Monte Carlo</b> respeta todo lo que fijes a mano: si marcas, por ejemplo, que un equipo gana todos sus partidos restantes, las 300k simulaciones darán ese resultado por hecho y solo sortearán las partidas que dejes sin decidir. Usa «↺ Restablecer a resultados reales» para quitar tus condiciones antes de simular un escenario totalmente libre.
   </footer>
 </div>
 
@@ -449,21 +467,109 @@ function ranksMap(standingsArr){
   return m;
 }
 
-function h2hWinner(teamIdA, teamIdB){
-  const idFwd = teamIdA+'_'+teamIdB;
-  const idRev = teamIdB+'_'+teamIdA;
-  const m = ALL_MATCHES.find(mm => mm.id === idFwd || mm.id === idRev);
-  if(!m) return null;
-  const pick = picks[m.id];
-  if(!pick) return null;
-  return pick.winner; // id of the team that won the head-to-head
+// ---- Summer Split Tiebreakers (LEC Rulebook v3.1, sections 6.6 & 6.7) ----
+// Standings are ranked first by Match wins. Teams tied on Match wins are
+// broken, in order, by:
+//   1) Head-to-Head Match Record (only among the tied teams)
+//   2) Head-to-Head Game Win Percentage (only among the tied teams)
+//   3) Strength of Victory (SoV) using Match wins of defeated opponents
+//   4) Strength of Victory (SoV) using Game wins of defeated opponents
+//   5) Spring Split standings
+// Per rule 6.6.2: for ties of 3+ teams, as soon as a metric clearly separates
+// part of the group, those teams are placed and a brand-new tiebreaker
+// (starting again at metric 1) is run among whichever teams remain tied.
+// This simulator only models the Summer Split, so Spring Split standings
+// (metric 5) aren't available as real data; when a tie survives metrics 1-4,
+// it's resolved alphabetically as a stable, clearly-labelled fallback.
+function h2hMatchesBetween(idA, idB){
+  const idFwd = idA+'_'+idB, idRev = idB+'_'+idA;
+  return ALL_MATCHES.filter(m => m.id === idFwd || m.id === idRev);
 }
 
-function computeStandings(){
+function groupH2HMatchWins(teamId, group, picksSource){
+  let wins = 0;
+  group.forEach(otherId=>{
+    if(otherId === teamId) return;
+    h2hMatchesBetween(teamId, otherId).forEach(m=>{
+      const pick = picksSource[m.id];
+      if(pick && pick.winner === teamId) wins++;
+    });
+  });
+  return wins;
+}
+
+function groupH2HGameWinPct(teamId, group, picksSource){
+  let gamesWon = 0, gamesPlayed = 0;
+  group.forEach(otherId=>{
+    if(otherId === teamId) return;
+    h2hMatchesBetween(teamId, otherId).forEach(m=>{
+      const pick = picksSource[m.id];
+      if(!pick) return;
+      const parts = pick.score.split('-').map(Number);
+      const winnerGames = parts[0], loserGames = parts[1];
+      const teamWonMatch = pick.winner === teamId;
+      const teamGames = teamWonMatch ? winnerGames : loserGames;
+      const oppGames = teamWonMatch ? loserGames : winnerGames;
+      gamesWon += teamGames; gamesPlayed += teamGames + oppGames;
+    });
+  });
+  return gamesPlayed > 0 ? gamesWon / gamesPlayed : 0;
+}
+
+// SoV: sum, over every opponent this team defeated in a Match, of that
+// opponent's season-total Match wins (metric 'match') or Games won (metric 'game').
+function sovScore(teamId, metric, statsById, picksSource){
+  let score = 0;
+  ALL_MATCHES.forEach(m=>{
+    const pick = picksSource[m.id];
+    if(!pick || pick.winner !== teamId) return;
+    const loserId = pick.winner === m.home.id ? m.away.id : m.home.id;
+    score += metric === 'match' ? statsById[loserId].w : statsById[loserId].gw;
+  });
+  return score;
+}
+
+function resolveTiedGroup(group, statsById, picksSource, metricIndex){
+  if(group.length <= 1) return group;
+  const metrics = [
+    (id)=> groupH2HMatchWins(id, group, picksSource),
+    (id)=> groupH2HGameWinPct(id, group, picksSource),
+    (id)=> sovScore(id, 'match', statsById, picksSource),
+    (id)=> sovScore(id, 'game', statsById, picksSource),
+  ];
+  if(metricIndex >= metrics.length){
+    // Metric 5 (Spring Split standings) not modelled here.
+    return [...group].sort((a,b)=> TEAM_MAP[a].name.localeCompare(TEAM_MAP[b].name));
+  }
+  const metricFn = metrics[metricIndex];
+  const scored = group.map(id => ({ id, val: metricFn(id) }));
+  scored.sort((a,b)=> b.val - a.val);
+  const clusters = [];
+  let cur = [scored[0]];
+  for(let i=1; i<scored.length; i++){
+    if(Math.abs(scored[i].val - cur[0].val) < 1e-9) cur.push(scored[i]);
+    else { clusters.push(cur); cur = [scored[i]]; }
+  }
+  clusters.push(cur);
+  if(clusters.length === 1){
+    // Nobody separated on this metric: move on to the next metric for the whole group.
+    return resolveTiedGroup(group, statsById, picksSource, metricIndex+1);
+  }
+  // Some teams got separated: place each resolved cluster, and re-run the
+  // tiebreaker from metric 1 for any cluster that's still tied among itself.
+  let result = [];
+  clusters.forEach(cluster=>{
+    const ids = cluster.map(c=>c.id);
+    result = result.concat(ids.length === 1 ? ids : resolveTiedGroup(ids, statsById, picksSource, 0));
+  });
+  return result;
+}
+
+function computeStandingsCore(picksSource){
   const table = {};
   TEAMS.forEach(t => table[t.id] = {w:0,l:0,gw:0,gl:0,pj:0});
   ALL_MATCHES.forEach(m=>{
-    const pick = picks[m.id];
+    const pick = picksSource[m.id];
     if(!pick) return;
     const winnerId = pick.winner;
     const loserId = winnerId === m.home.id ? m.away.id : m.home.id;
@@ -472,72 +578,26 @@ function computeStandings(){
     table[winnerId].w++; table[winnerId].gw += wg; table[winnerId].gl += lg; table[winnerId].pj++;
     table[loserId].l++;  table[loserId].gw += lg;  table[loserId].gl += wg;  table[loserId].pj++;
   });
-  const arr = TEAMS.map(t => {
-    const s = table[t.id];
+  const idsByWinsDesc = TEAMS.map(t=>t.id).sort((a,b)=> table[b].w - table[a].w);
+  const orderedIds = [];
+  let i = 0;
+  while(i < idsByWinsDesc.length){
+    let j = i+1;
+    while(j < idsByWinsDesc.length && table[idsByWinsDesc[j]].w === table[idsByWinsDesc[i]].w) j++;
+    const group = idsByWinsDesc.slice(i, j);
+    const resolved = group.length > 1 ? resolveTiedGroup(group, table, picksSource, 0) : group;
+    orderedIds.push(...resolved);
+    i = j;
+  }
+  return orderedIds.map(id => {
+    const t = TEAM_MAP[id];
+    const s = table[id];
     return { ...t, ...s, diff: s.gw - s.gl };
   });
-  // Base order: victorias -> diferencial de mapas -> mapas ganados -> nombre
-  arr.sort((a,b)=> b.w - a.w || b.diff - a.diff || b.gw - a.gw || a.name.localeCompare(b.name));
-  // Desempate por enfrentamiento directo: solo cuando el empate a victorias es EXACTAMENTE
-  // entre dos equipos consecutivos en la tabla (no se aplica a empates de 3 o más).
-  for(let i=0; i<arr.length-1; i++){
-    if(arr[i].w === arr[i+1].w){
-      const isolatedAbove = (i===0) || (arr[i-1].w !== arr[i].w);
-      const isolatedBelow = (i+2>=arr.length) || (arr[i+2].w !== arr[i+1].w);
-      if(isolatedAbove && isolatedBelow){
-        const winner = h2hWinner(arr[i].id, arr[i+1].id);
-        if(winner && winner === arr[i+1].id){
-          const tmp = arr[i]; arr[i] = arr[i+1]; arr[i+1] = tmp;
-        }
-      }
-    }
-  }
-  return arr;
 }
 
-// ---- Monte Carlo simulation engine (pure functions, independent of UI `picks`) ----
-function h2hWinnerFor(teamIdA, teamIdB, simPicks){
-  const idFwd = teamIdA+'_'+teamIdB;
-  const idRev = teamIdB+'_'+teamIdA;
-  const m = ALL_MATCHES.find(mm => mm.id === idFwd || mm.id === idRev);
-  if(!m) return null;
-  const pick = simPicks[m.id];
-  if(!pick) return null;
-  return pick.winner;
-}
-
-function computeStandingsFor(simPicks){
-  const table = {};
-  TEAMS.forEach(t => table[t.id] = {w:0,l:0,gw:0,gl:0,pj:0});
-  ALL_MATCHES.forEach(m=>{
-    const pick = simPicks[m.id];
-    if(!pick) return;
-    const winnerId = pick.winner;
-    const loserId = winnerId === m.home.id ? m.away.id : m.home.id;
-    const parts = pick.score.split('-').map(Number);
-    const wg = parts[0], lg = parts[1];
-    table[winnerId].w++; table[winnerId].gw += wg; table[winnerId].gl += lg; table[winnerId].pj++;
-    table[loserId].l++;  table[loserId].gw += lg;  table[loserId].gl += wg;  table[loserId].pj++;
-  });
-  const arr = TEAMS.map(t => {
-    const s = table[t.id];
-    return { ...t, ...s, diff: s.gw - s.gl };
-  });
-  arr.sort((a,b)=> b.w - a.w || b.diff - a.diff || b.gw - a.gw || a.name.localeCompare(b.name));
-  for(let i=0; i<arr.length-1; i++){
-    if(arr[i].w === arr[i+1].w){
-      const isolatedAbove = (i===0) || (arr[i-1].w !== arr[i].w);
-      const isolatedBelow = (i+2>=arr.length) || (arr[i+2].w !== arr[i+1].w);
-      if(isolatedAbove && isolatedBelow){
-        const winner = h2hWinnerFor(arr[i].id, arr[i+1].id, simPicks);
-        if(winner && winner === arr[i+1].id){
-          const tmp = arr[i]; arr[i] = arr[i+1]; arr[i+1] = tmp;
-        }
-      }
-    }
-  }
-  return arr;
-}
+function computeStandings(){ return computeStandingsCore(picks); }
+function computeStandingsFor(simPicks){ return computeStandingsCore(simPicks); }
 
 function simulateOneScenario(fixedPicks){
   // Parte de las partidas ya fijadas (resultados reales + tus elecciones manuales,
@@ -556,7 +616,7 @@ function simulateOneScenario(fixedPicks){
 
 function runMonteCarlo(n){
   // Congelamos el estado de "picks" (reales + manuales) al momento de pulsar el botón,
-  // para que las 1M simulaciones sean consistentes con lo que el usuario ve en pantalla.
+  // para que las 300k simulaciones sean consistentes con lo que el usuario ve en pantalla.
   const fixedPicks = JSON.parse(JSON.stringify(picks));
   const fixedCount = Object.keys(fixedPicks).length;
   const counts = {};
@@ -802,13 +862,13 @@ document.getElementById('mcRunBtn').addEventListener('click', ()=>{
   const btn = document.getElementById('mcRunBtn');
   btn.disabled = true;
   const originalLabel = btn.textContent;
-  btn.textContent = '⏳ Simulando 1M escenarios...';
+  btn.textContent = '⏳ Simulando 300k escenarios...';
   const lockedNow = Object.keys(picks).length;
   document.getElementById('mcStatus').textContent = 'Calculando con ' + lockedNow + ' partidas fijadas... esto tarda un instante.';
   setTimeout(()=>{
-    runMonteCarlo(1000000);
+    runMonteCarlo(300000);
     btn.disabled = false;
-    btn.textContent = '🔁 Repetir 1M simulaciones';
+    btn.textContent = '🔁 Repetir 300k simulaciones';
   }, 30);
 });
 
