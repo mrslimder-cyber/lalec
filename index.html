@@ -458,7 +458,7 @@ ALL_MATCHES.forEach(m=>{ if(m.result) REAL_RESULTS[m.id] = { winner: m.result.wi
 // ---- State ----
 let picks = { ...JSON.parse(JSON.stringify(REAL_RESULTS)) }; // matchId -> {winner, score}
 let prevRanks = {};    // teamId -> rank before the most recent change
-let activeRound = 0;
+let activeRound = 3;
 const STORAGE_KEY = 'picks-v2-real-schedule';
 
 function ranksMap(standingsArr){
