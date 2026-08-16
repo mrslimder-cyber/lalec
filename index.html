@@ -249,6 +249,63 @@ table.mc-table .team-cell .tname small{display:block; font-weight:400; color:var
 .mc-legend{display:flex; gap:16px; flex-wrap:wrap; padding:12px 2px 0; font-size:11px; color:var(--text-dim);}
 .mc-legend span{display:inline-flex; align-items:center; gap:6px;}
 .mc-legend i{width:10px;height:10px;border-radius:2px;display:inline-block;}
+
+/* ---------- Team clickable rows ---------- */
+tr.row-team{cursor:pointer;}
+tr.row-team:hover td{background:rgba(255,255,255,0.035);}
+.standings-hint{font-size:11px; color:var(--text-dim); padding:0 4px 12px; display:flex; align-items:center; gap:6px;}
+
+/* ---------- Team Impact Modal ---------- */
+.modal-overlay{
+  position:fixed; inset:0; background:rgba(5,6,9,0.72); backdrop-filter:blur(2px);
+  display:none; align-items:flex-start; justify-content:center; z-index:1000;
+  padding:40px 16px; overflow-y:auto;
+}
+.modal-overlay.open{display:flex;}
+.modal-box{
+  background:var(--panel); border:1px solid var(--border); border-radius:16px;
+  width:100%; max-width:920px; padding:22px 22px 26px; position:relative;
+}
+.impact-columns{display:grid; grid-template-columns:1fr 1fr; gap:20px;}
+@media (max-width:680px){.impact-columns{grid-template-columns:1fr;}}
+.impact-col-title{
+  font-family:'Oswald',sans-serif; font-size:11.5px; letter-spacing:1.5px; text-transform:uppercase;
+  color:var(--text-dim); margin-bottom:10px; display:flex; align-items:center; gap:6px;
+}
+.impact-col-title .dot{width:6px; height:6px; border-radius:50%; background:var(--accent); flex-shrink:0;}
+.impact-col-title.other .dot{background:var(--gold);}
+.modal-close{
+  position:absolute; top:16px; right:16px; background:var(--panel-2); border:1px solid var(--border);
+  color:var(--text-dim); width:30px; height:30px; border-radius:8px; cursor:pointer; font-size:15px;
+  display:flex; align-items:center; justify-content:center;
+}
+.modal-close:hover{color:var(--danger); border-color:var(--danger);}
+.modal-team-header{display:flex; align-items:center; gap:12px; margin-bottom:4px; padding-right:40px;}
+.modal-team-header .swatch{width:11px; height:30px; border-radius:3px; flex-shrink:0;}
+.modal-team-title{font-family:'Oswald',sans-serif; font-size:22px; font-weight:700; text-transform:uppercase; letter-spacing:.5px;}
+.modal-team-sub{font-size:12px; color:var(--text-dim);}
+.modal-current{display:flex; gap:18px; margin:14px 0 6px; padding:12px 14px; background:var(--panel-2); border:1px solid var(--border); border-radius:10px; flex-wrap:wrap;}
+.modal-current .mcur-item{display:flex; flex-direction:column; gap:2px;}
+.modal-current .mcur-label{font-size:10px; letter-spacing:1px; text-transform:uppercase; color:var(--text-dim);}
+.modal-current .mcur-value{font-size:15px; font-weight:700;}
+.modal-desc{font-size:12px; color:var(--text-dim); line-height:1.5; margin:14px 0 16px;}
+.modal-loading{font-size:13px; color:var(--text-dim); padding:30px 6px; text-align:center;}
+.impact-list{display:flex; flex-direction:column; gap:10px; max-height:440px; overflow-y:auto; padding-right:4px;}
+.impact-row{background:var(--panel-2); border:1px solid var(--border); border-radius:11px; padding:12px 14px;}
+.impact-row-head{display:flex; justify-content:space-between; align-items:baseline; margin-bottom:8px; gap:10px; flex-wrap:wrap;}
+.impact-match{font-family:'Oswald',sans-serif; font-size:13.5px; font-weight:600; letter-spacing:.3px;}
+.impact-match .vs-sep{color:var(--text-dim); font-weight:400; margin:0 5px;}
+.impact-meta{font-size:10.5px; color:var(--text-dim);}
+.impact-scenarios{display:flex; flex-direction:column; gap:6px;}
+.impact-scenario{display:flex; align-items:center; gap:8px; font-size:12px;}
+.impact-scenario .isc-label{width:150px; flex-shrink:0; color:var(--text-dim); display:flex; align-items:center; gap:6px;}
+.impact-scenario .isc-swatch{width:7px; height:14px; border-radius:2px; flex-shrink:0;}
+.impact-bar-track{flex:1; height:8px; background:var(--panel-3); border-radius:4px; overflow:hidden;}
+.impact-bar-fill{height:100%; background:linear-gradient(90deg,var(--accent),var(--gold));}
+.impact-scenario .isc-pct{width:44px; text-align:right; font-variant-numeric:tabular-nums; font-weight:700; flex-shrink:0;}
+.impact-scenario .isc-rank{width:60px; text-align:right; color:var(--text-dim); font-size:10.5px; flex-shrink:0;}
+.impact-swing{font-size:10.5px; color:var(--gold); margin-top:6px; font-weight:600;}
+.impact-empty{text-align:center; color:var(--text-dim); font-size:13px; padding:26px 6px;}
 </style>
 </head>
 <body>
@@ -296,6 +353,7 @@ table.mc-table .team-cell .tname small{display:block; font-weight:400; color:var
         <span><span class="arrow up">▲</span> Sube desde tu última elección</span>
         <span><span class="arrow down">▼</span> Baja desde tu última elección</span>
       </div>
+      <div class="standings-hint">👆 Haz clic en un equipo para ver los partidos más impactantes de su clasificación.</div>
       <div style="font-size:11px; color:var(--text-dim); padding:0 4px 12px; line-height:1.5;">
         Criterio de desempate (Reglamento LEC v3.1, secciones 6.6 y 6.7):
       </div>
@@ -353,6 +411,13 @@ table.mc-table .team-cell .tname small{display:block; font-weight:400; color:var
   <footer class="note">
     <b>Cómo funciona:</b> las partidas marcadas con la etiqueta verde <b>JUGADA</b> ya se disputaron y muestran el resultado real (fuente: Leaguepedia / cobertura oficial LEC), pero puedes pulsarlas igualmente si quieres explorar un escenario hipotético alternativo. Para las partidas futuras, pulsa sobre un equipo para marcarlo ganador (por defecto 2-0, ajustable a 2-1) y observa cómo cambia la clasificación en directo. Tus elecciones se guardan automáticamente. El bloque de <b>Simulación Monte Carlo</b> respeta todo lo que fijes a mano: si marcas, por ejemplo, que un equipo gana todos sus partidos restantes, las 100K simulaciones darán ese resultado por hecho y solo sortearán las partidas que dejes sin decidir. Usa «↺ Restablecer a resultados reales» para quitar tus condiciones antes de simular un escenario totalmente libre.
   </footer>
+</div>
+
+<div class="modal-overlay" id="teamModalOverlay">
+  <div class="modal-box">
+    <button class="modal-close" id="teamModalClose">✕</button>
+    <div id="teamModalContent"></div>
+  </div>
 </div>
 
 <script>
@@ -450,6 +515,8 @@ const SCHEDULE = RAW_SCHEDULE.map(week=>({
 }));
 const ALL_MATCHES = SCHEDULE.flatMap(w=>w.matches);
 const TOTAL_MATCHES = ALL_MATCHES.length;
+const MATCH_ORDER = {};
+ALL_MATCHES.forEach((m,i)=>{ MATCH_ORDER[m.id] = i; });
 
 // Real results pre-loaded as the baseline
 const REAL_RESULTS = {};
@@ -673,6 +740,163 @@ function renderMonteCarloResults(counts, n, fixedCount){
   document.getElementById('mcResultsWrap').style.display = 'block';
 }
 
+// ---- Team impact modal ----
+// Al pulsar un equipo en la clasificación, calculamos cuánto pesa cada partido
+// pendiente en sus opciones de playoffs: para cada partido sin decidir, fijamos
+// primero a un ganador y luego al otro, y en ambos casos sorteamos el resto de
+// la temporada miles de veces. La diferencia de probabilidad de playoffs (y de
+// posición media) entre ambos escenarios es el "impacto" de ese partido.
+function simulateTeamMetrics(teamId, fixedPicks, trials){
+  let playoffCount = 0, rankSum = 0;
+  for(let i=0; i<trials; i++){
+    const standings = simulateOneScenario(fixedPicks);
+    const idx = standings.findIndex(t => t.id === teamId);
+    if(idx < 6) playoffCount++;
+    rankSum += idx + 1;
+  }
+  return { playoffPct: playoffCount / trials * 100, avgRank: rankSum / trials };
+}
+
+function computeTeamImpact(teamId, trials){
+  const baseFixed = JSON.parse(JSON.stringify(picks));
+  const undecided = ALL_MATCHES.filter(m => !baseFixed[m.id]);
+  const results = undecided.map(m=>{
+    const fixedHome = { ...baseFixed, [m.id]: { winner: m.home.id, score:'2-1' } };
+    const fixedAway = { ...baseFixed, [m.id]: { winner: m.away.id, score:'2-1' } };
+    const homeMetrics = simulateTeamMetrics(teamId, fixedHome, trials);
+    const awayMetrics = simulateTeamMetrics(teamId, fixedAway, trials);
+    const playoffSwing = Math.abs(homeMetrics.playoffPct - awayMetrics.playoffPct);
+    const rankSwing = Math.abs(homeMetrics.avgRank - awayMetrics.avgRank);
+    return { match: m, home: homeMetrics, away: awayMetrics, playoffSwing, rankSwing, score: playoffSwing + rankSwing*18 };
+  });
+  results.sort((a,b)=> b.score - a.score);
+  return results;
+}
+
+function teamModalHeaderHtml(teamId){
+  const team = TEAM_MAP[teamId];
+  const standings = computeStandings();
+  const idx = standings.findIndex(t => t.id === teamId);
+  const t = standings[idx];
+  return '<div class="modal-team-header"><div class="swatch" style="background:'+team.color+'"></div>'
+    + '<div><div class="modal-team-title">'+team.name+'</div>'
+    +   '<div class="modal-team-sub">Partidos más impactantes para su clasificación</div></div></div>'
+    + '<div class="modal-current">'
+    +   '<div class="mcur-item"><span class="mcur-label">Posición</span><span class="mcur-value">'+(idx+1)+'º</span></div>'
+    +   '<div class="mcur-item"><span class="mcur-label">V-D</span><span class="mcur-value">'+t.w+'-'+t.l+'</span></div>'
+    +   '<div class="mcur-item"><span class="mcur-label">Dif. mapas</span><span class="mcur-value">'+(t.diff>0?'+':'')+t.diff+'</span></div>'
+    + '</div>';
+}
+
+function renderTeamModalLoading(teamId){
+  document.getElementById('teamModalContent').innerHTML = teamModalHeaderHtml(teamId)
+    + '<div class="modal-desc">Calculando qué partidos pendientes pesan más en sus opciones de playoffs, simulando miles de escenarios para cada resultado posible...</div>'
+    + '<div class="modal-loading">⏳ Simulando escenarios...</div>';
+}
+
+// Fila para un partido de OTRO equipo: se muestran las dos opciones (gana local / gana visitante)
+function impactRowHtml(item){
+  const m = item.match;
+  const barHome = Math.max(item.home.playoffPct, 2);
+  const barAway = Math.max(item.away.playoffPct, 2);
+  return '<div class="impact-row">'
+    + '<div class="impact-row-head">'
+    +   '<div class="impact-match">'+m.home.short+'<span class="vs-sep">vs</span>'+m.away.short+'</div>'
+    +   '<div class="impact-meta">'+m.date+'</div>'
+    + '</div>'
+    + '<div class="impact-scenarios">'
+    +   '<div class="impact-scenario"><span class="isc-label"><span class="isc-swatch" style="background:'+m.home.color+'"></span>Si gana '+m.home.short+'</span>'
+    +     '<div class="impact-bar-track"><div class="impact-bar-fill" style="width:'+barHome+'%"></div></div>'
+    +     '<span class="isc-pct">'+item.home.playoffPct.toFixed(0)+'%</span>'
+    +     '<span class="isc-rank">pos. '+item.home.avgRank.toFixed(1)+'</span>'
+    +   '</div>'
+    +   '<div class="impact-scenario"><span class="isc-label"><span class="isc-swatch" style="background:'+m.away.color+'"></span>Si gana '+m.away.short+'</span>'
+    +     '<div class="impact-bar-track"><div class="impact-bar-fill" style="width:'+barAway+'%"></div></div>'
+    +     '<span class="isc-pct">'+item.away.playoffPct.toFixed(0)+'%</span>'
+    +     '<span class="isc-rank">pos. '+item.away.avgRank.toFixed(1)+'</span>'
+    +   '</div>'
+    + '</div>'
+    + '<div class="impact-swing">↕ '+item.playoffSwing.toFixed(0)+' pp de diferencia en probabilidad de playoffs'
+    +   (item.rankSwing >= 0.3 ? ' · '+item.rankSwing.toFixed(1)+' posiciones de media' : '') + '</div>'
+    + '</div>';
+}
+
+// Fila para un partido DEL PROPIO equipo: se muestra en términos de "si gana / si pierde"
+function ownMatchRowHtml(item, teamId){
+  const m = item.match;
+  const isHome = m.home.id === teamId;
+  const opponent = isHome ? m.away : m.home;
+  const winMetrics = isHome ? item.home : item.away;
+  const loseMetrics = isHome ? item.away : item.home;
+  const barWin = Math.max(winMetrics.playoffPct, 2);
+  const barLose = Math.max(loseMetrics.playoffPct, 2);
+  return '<div class="impact-row">'
+    + '<div class="impact-row-head">'
+    +   '<div class="impact-match">vs <span style="color:'+opponent.color+'">'+opponent.short+'</span></div>'
+    +   '<div class="impact-meta">'+m.date+'</div>'
+    + '</div>'
+    + '<div class="impact-scenarios">'
+    +   '<div class="impact-scenario"><span class="isc-label">✅ Si gana</span>'
+    +     '<div class="impact-bar-track"><div class="impact-bar-fill" style="width:'+barWin+'%"></div></div>'
+    +     '<span class="isc-pct">'+winMetrics.playoffPct.toFixed(0)+'%</span>'
+    +     '<span class="isc-rank">pos. '+winMetrics.avgRank.toFixed(1)+'</span>'
+    +   '</div>'
+    +   '<div class="impact-scenario"><span class="isc-label">❌ Si pierde</span>'
+    +     '<div class="impact-bar-track"><div class="impact-bar-fill" style="width:'+barLose+'%"></div></div>'
+    +     '<span class="isc-pct">'+loseMetrics.playoffPct.toFixed(0)+'%</span>'
+    +     '<span class="isc-rank">pos. '+loseMetrics.avgRank.toFixed(1)+'</span>'
+    +   '</div>'
+    + '</div>'
+    + '<div class="impact-swing">↕ '+item.playoffSwing.toFixed(0)+' pp de diferencia en probabilidad de playoffs'
+    +   (item.rankSwing >= 0.3 ? ' · '+item.rankSwing.toFixed(1)+' posiciones de media' : '') + '</div>'
+    + '</div>';
+}
+
+function renderTeamModalResults(teamId, results){
+  let body;
+  if(results.length === 0){
+    body = '<div class="impact-empty">No quedan partidos pendientes: la clasificación de este equipo ya está completamente decidida con los resultados actuales.</div>';
+  } else {
+    const ownMatches = results
+      .filter(r => r.match.home.id === teamId || r.match.away.id === teamId)
+      .sort((a,b)=> MATCH_ORDER[a.match.id] - MATCH_ORDER[b.match.id]);
+    const otherMatches = results
+      .filter(r => r.match.home.id !== teamId && r.match.away.id !== teamId)
+      .sort((a,b)=> b.score - a.score)
+      .slice(0, 8);
+
+    body = '<div class="modal-desc">A la izquierda, sus partidos pendientes, del más próximo al más lejano, con cómo cambian sus opciones según gane o pierda. A la derecha, los partidos de otros equipos que más pesan en su clasificación (1.500 simulaciones por escenario; el resto de la temporada se sortea al azar en ambos casos).</div>'
+      + '<div class="impact-columns">'
+      +   '<div class="impact-col">'
+      +     '<div class="impact-col-title"><span class="dot"></span>Sus próximos partidos</div>'
+      +     (ownMatches.length
+            ? '<div class="impact-list">' + ownMatches.map(r => ownMatchRowHtml(r, teamId)).join('') + '</div>'
+            : '<div class="impact-empty">No le quedan partidos por disputar.</div>')
+      +   '</div>'
+      +   '<div class="impact-col">'
+      +     '<div class="impact-col-title other"><span class="dot"></span>Partidos de otros que le afectan</div>'
+      +     (otherMatches.length
+            ? '<div class="impact-list">' + otherMatches.map(impactRowHtml).join('') + '</div>'
+            : '<div class="impact-empty">Ningún otro partido pendiente afecta ya a su clasificación.</div>')
+      +   '</div>'
+      + '</div>';
+  }
+  document.getElementById('teamModalContent').innerHTML = teamModalHeaderHtml(teamId) + body;
+}
+
+function openTeamImpactModal(teamId){
+  document.getElementById('teamModalOverlay').classList.add('open');
+  renderTeamModalLoading(teamId);
+  setTimeout(()=>{
+    const results = computeTeamImpact(teamId, 1500);
+    renderTeamModalResults(teamId, results);
+  }, 30);
+}
+
+function closeTeamModal(){
+  document.getElementById('teamModalOverlay').classList.remove('open');
+}
+
 // ---- Persistence ----
 async function loadPicks(){
   try{
@@ -760,7 +984,7 @@ function renderStandings(){
     }
     const isLeader = rank === 1 && t.pj > 0;
     const flash = (prev !== undefined && prev !== rank) ? 'flash' : '';
-    html += '<tr class="row-team '+flash+(isLeader?' leader':'')+'">'
+    html += '<tr class="row-team '+flash+(isLeader?' leader':'')+'" data-team="'+t.id+'">'
       + '<td class="num"><div class="rank-cell">'+rank+arrow+'</div></td>'
       + '<td><div class="team-cell"><div class="swatch" style="background:'+t.color+'"></div>'
       +   '<div class="tname">'+t.name+'<small>'+t.short+'</small></div></div></td>'
@@ -857,6 +1081,19 @@ document.getElementById('matchesGrid').addEventListener('click', (e)=>{
 
 document.getElementById('randomizeBtn').addEventListener('click', randomizeRemaining);
 document.getElementById('resetBtn').addEventListener('click', resetToReal);
+
+document.getElementById('standingsBody').addEventListener('click', (e)=>{
+  const row = e.target.closest('tr.row-team');
+  if(!row) return;
+  openTeamImpactModal(row.dataset.team);
+});
+document.getElementById('teamModalClose').addEventListener('click', closeTeamModal);
+document.getElementById('teamModalOverlay').addEventListener('click', (e)=>{
+  if(e.target.id === 'teamModalOverlay') closeTeamModal();
+});
+document.addEventListener('keydown', (e)=>{
+  if(e.key === 'Escape') closeTeamModal();
+});
 
 document.getElementById('mcRunBtn').addEventListener('click', ()=>{
   const btn = document.getElementById('mcRunBtn');
