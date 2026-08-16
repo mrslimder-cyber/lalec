@@ -80,7 +80,18 @@ h1{
 h1 span{color:var(--accent);}
 .subtitle{color:var(--text-dim); font-size:14px; max-width:760px; line-height:1.55; margin-top:2px;}
 .subtitle b{color:var(--text); font-weight:600;}
-.subtitle.credit{font-family:'JetBrains Mono',monospace; font-size:11.5px; color:var(--text-faint); letter-spacing:.5px;}
+
+.header-credit{
+  position:absolute; top:22px; right:24px;
+  display:inline-flex; align-items:center; gap:7px;
+  font-family:'JetBrains Mono',monospace; font-size:11.5px; letter-spacing:1px;
+  color:var(--text-faint); text-decoration:none; transition:.15s ease;
+}
+.header-credit:hover{color:var(--accent);}
+.header-credit svg{width:15px; height:15px; fill:currentColor; flex-shrink:0;}
+@media (max-width:560px){
+  .header-credit{position:static; margin:2px 0 -4px; justify-content:flex-end;}
+}
 
 /* ---------- Controls bar ---------- */
 .controlbar{
@@ -151,10 +162,10 @@ tr.playoff-divider td{
   padding:7px 6px; border-bottom:none;
 }
 .divider-line{
-  display:flex; align-items:center; gap:8px; padding-top:2px;
+  display:flex; align-items:center; gap:8px; padding-top:2px; --divider-color:var(--gold);
 }
-.divider-line::before,.divider-line::after{content:'';flex:1;height:2px;background:repeating-linear-gradient(90deg,var(--gold) 0 6px, transparent 6px 11px);}
-.divider-text{font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:2px; color:var(--gold); text-transform:uppercase; white-space:nowrap; font-weight:700;}
+.divider-line::before,.divider-line::after{content:'';flex:1;height:2px;background:repeating-linear-gradient(90deg,var(--divider-color) 0 6px, transparent 6px 11px);}
+.divider-text{font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:2px; color:var(--divider-color); text-transform:uppercase; white-space:nowrap; font-weight:700;}
 
 .legend{display:flex; gap:16px; flex-wrap:wrap; padding:13px 4px 14px; font-size:11px; color:var(--text-dim); font-family:'JetBrains Mono',monospace;}
 .legend span{display:inline-flex; align-items:center; gap:6px;}
@@ -331,6 +342,15 @@ tr.row-team:hover td{background:rgba(255,255,255,0.03);}
 .modal-current .mcur-item{display:flex; flex-direction:column; gap:3px;}
 .modal-current .mcur-label{font-family:'JetBrains Mono',monospace; font-size:9.5px; letter-spacing:1px; text-transform:uppercase; color:var(--text-faint);}
 .modal-current .mcur-value{font-family:'Big Shoulders Display',sans-serif; font-size:19px; font-weight:700;}
+.mode-toggle{display:flex; gap:8px; margin:16px 0 4px; flex-wrap:wrap;}
+.mode-btn{
+  font-family:'JetBrains Mono',monospace; font-size:11.5px; font-weight:700; letter-spacing:.3px;
+  padding:9px 15px; cursor:pointer; text-transform:uppercase;
+  border:1px solid var(--border); background:var(--panel-2); color:var(--text-dim);
+  transition:.15s ease;
+}
+.mode-btn:hover{border-color:var(--accent); color:var(--text);}
+.mode-btn.active{background:var(--accent-dim); border-color:var(--accent); color:var(--text);}
 .modal-desc{font-size:12.5px; color:var(--text-dim); line-height:1.6; margin:16px 0 18px;}
 .modal-loading{font-family:'JetBrains Mono',monospace; font-size:13px; color:var(--text-dim); padding:36px 6px; text-align:center;}
 .impact-list{display:flex; flex-direction:column; gap:11px; max-height:600px; overflow-y:auto; padding-right:6px;}
@@ -354,10 +374,13 @@ tr.row-team:hover td{background:rgba(255,255,255,0.03);}
 <div class="wrap">
 
   <header class="top">
+    <a class="header-credit" href="https://x.com/lulopezapa" target="_blank" rel="noopener noreferrer" aria-label="Creado por @lulopezapa en X">
+      <span class="header-credit-label">CREADO:</span>
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"></path></svg>
+    </a>
     <div class="eyebrow">LEC · 2026 Summer Split</div>
     <h1>Simulador de <span>Clasificación</span></h1>
     <div class="subtitle">Calendario real de la fase regular (single round robin, Bo3, 10 equipos, 45 partidas). Las <b>28 partidas ya disputadas hasta el 16 de agosto</b> están precargadas con su resultado real; el resto puedes decidirlo tú para ver cómo queda la tabla en cada escenario. Los 6 primeros clasifican a Playoffs. Y los 4 primeros al ROADTRIP DE MKOI.</div>
-    <div class="subtitle credit">By: @lulopezapa</div>
   </header>
 
   <div class="controlbar">
@@ -392,6 +415,7 @@ tr.row-team:hover td{background:rgba(255,255,255,0.03);}
       <div class="legend">
         <span><i style="background:var(--gold)"></i> Líder</span>
         <span><i style="background:var(--accent)"></i> Zona Playoffs (Top 6)</span>
+        <span><i style="background:var(--violet)"></i> Zona Roadtrip (Top 4)</span>
         <span><span class="arrow up">▲</span> Sube desde tu última elección</span>
         <span><span class="arrow down">▼</span> Baja desde tu última elección</span>
       </div>
@@ -795,33 +819,49 @@ function renderMonteCarloResults(counts, n, fixedCount){
 // primero a un ganador y luego al otro, y en ambos casos sorteamos el resto de
 // la temporada miles de veces. La diferencia de probabilidad de playoffs (y de
 // posición media) entre ambos escenarios es el "impacto" de ese partido.
-const TEAM_IMPACT_TRIALS = 8000;
+const TEAM_IMPACT_TRIALS = 5000;
+const IMPACT_MODES = {
+  playoffs: { threshold:6, label:'Entra en playoffs', short:'playoffs', zoneLabel:'Playoffs (Top 6)' },
+  roadtrip: { threshold:4, label:'Va al roadtrip',    short:'el ROADTRIP', zoneLabel:'Roadtrip (Top 4)' },
+};
+let currentModalTeamId = null;
+let currentModalMode = 'playoffs';
 
-function simulateTeamMetrics(teamId, fixedPicks, trials){
-  let playoffCount = 0, rankSum = 0;
+function simulateTeamMetrics(teamId, fixedPicks, trials, threshold){
+  let hitCount = 0, rankSum = 0;
   for(let i=0; i<trials; i++){
     const standings = simulateOneScenario(fixedPicks);
     const idx = standings.findIndex(t => t.id === teamId);
-    if(idx < 6) playoffCount++;
+    if(idx < threshold) hitCount++;
     rankSum += idx + 1;
   }
-  return { playoffPct: playoffCount / trials * 100, avgRank: rankSum / trials };
+  return { pct: hitCount / trials * 100, avgRank: rankSum / trials };
 }
 
-function computeTeamImpact(teamId, trials){
+function computeTeamImpact(teamId, trials, threshold){
   const baseFixed = JSON.parse(JSON.stringify(picks));
   const undecided = ALL_MATCHES.filter(m => !baseFixed[m.id]);
   const results = undecided.map(m=>{
     const fixedHome = { ...baseFixed, [m.id]: { winner: m.home.id, score:'2-1' } };
     const fixedAway = { ...baseFixed, [m.id]: { winner: m.away.id, score:'2-1' } };
-    const homeMetrics = simulateTeamMetrics(teamId, fixedHome, trials);
-    const awayMetrics = simulateTeamMetrics(teamId, fixedAway, trials);
-    const playoffSwing = Math.abs(homeMetrics.playoffPct - awayMetrics.playoffPct);
+    const homeMetrics = simulateTeamMetrics(teamId, fixedHome, trials, threshold);
+    const awayMetrics = simulateTeamMetrics(teamId, fixedAway, trials, threshold);
+    const pctSwing = Math.abs(homeMetrics.pct - awayMetrics.pct);
     const rankSwing = Math.abs(homeMetrics.avgRank - awayMetrics.avgRank);
-    return { match: m, home: homeMetrics, away: awayMetrics, playoffSwing, rankSwing, score: playoffSwing + rankSwing*18 };
+    return { match: m, home: homeMetrics, away: awayMetrics, pctSwing, rankSwing, score: pctSwing + rankSwing*18 };
   });
   results.sort((a,b)=> b.score - a.score);
   return results;
+}
+
+function modeToggleHtml(){
+  let html = '<div class="mode-toggle" id="modalModeToggle">';
+  Object.keys(IMPACT_MODES).forEach(key=>{
+    const m = IMPACT_MODES[key];
+    html += '<button class="mode-btn'+(currentModalMode===key?' active':'')+'" data-mode="'+key+'">'+m.label+'</button>';
+  });
+  html += '</div>';
+  return html;
 }
 
 function teamModalHeaderHtml(teamId){
@@ -829,27 +869,31 @@ function teamModalHeaderHtml(teamId){
   const standings = computeStandings();
   const idx = standings.findIndex(t => t.id === teamId);
   const t = standings[idx];
+  const mode = IMPACT_MODES[currentModalMode];
   return '<div class="modal-team-header">'+teamLogoHtml(team,44)
     + '<div><div class="modal-team-title">'+team.name+'</div>'
-    +   '<div class="modal-team-sub">Partidos más impactantes para su clasificación</div></div></div>'
+    +   '<div class="modal-team-sub">Partidos más impactantes para sus opciones de '+mode.zoneLabel+'</div></div></div>'
     + '<div class="modal-current">'
     +   '<div class="mcur-item"><span class="mcur-label">Posición</span><span class="mcur-value">'+(idx+1)+'º</span></div>'
     +   '<div class="mcur-item"><span class="mcur-label">V-D</span><span class="mcur-value">'+t.w+'-'+t.l+'</span></div>'
     +   '<div class="mcur-item"><span class="mcur-label">Dif. mapas</span><span class="mcur-value">'+(t.diff>0?'+':'')+t.diff+'</span></div>'
-    + '</div>';
+    + '</div>'
+    + modeToggleHtml();
 }
 
 function renderTeamModalLoading(teamId){
+  const mode = IMPACT_MODES[currentModalMode];
   document.getElementById('teamModalContent').innerHTML = teamModalHeaderHtml(teamId)
-    + '<div class="modal-desc">Calculando qué partidos pendientes pesan más en sus opciones de playoffs, simulando miles de escenarios para cada resultado posible...</div>'
+    + '<div class="modal-desc">Calculando qué partidos pendientes pesan más en sus opciones de '+mode.zoneLabel+', simulando miles de escenarios para cada resultado posible...</div>'
     + '<div class="modal-loading">⏳ Simulando '+TEAM_IMPACT_TRIALS.toLocaleString('es-ES')+' escenarios por partido...</div>';
 }
 
 // Fila para un partido de OTRO equipo: se muestran las dos opciones (gana local / gana visitante)
 function impactRowHtml(item){
   const m = item.match;
-  const barHome = Math.max(item.home.playoffPct, 2);
-  const barAway = Math.max(item.away.playoffPct, 2);
+  const mode = IMPACT_MODES[currentModalMode];
+  const barHome = Math.max(item.home.pct, 2);
+  const barAway = Math.max(item.away.pct, 2);
   return '<div class="impact-row">'
     + '<div class="impact-row-head">'
     +   '<div class="impact-match">'+teamLogoHtml(m.home,18)+m.home.short+'<span class="vs-sep">vs</span>'+teamLogoHtml(m.away,18)+m.away.short+'</div>'
@@ -858,16 +902,16 @@ function impactRowHtml(item){
     + '<div class="impact-scenarios">'
     +   '<div class="impact-scenario"><span class="isc-label">'+teamLogoHtml(m.home,16)+'Si gana '+m.home.short+'</span>'
     +     '<div class="impact-bar-track"><div class="impact-bar-fill" style="width:'+barHome+'%"></div></div>'
-    +     '<span class="isc-pct">'+item.home.playoffPct.toFixed(0)+'%</span>'
+    +     '<span class="isc-pct">'+item.home.pct.toFixed(0)+'%</span>'
     +     '<span class="isc-rank">pos. '+item.home.avgRank.toFixed(1)+'</span>'
     +   '</div>'
     +   '<div class="impact-scenario"><span class="isc-label">'+teamLogoHtml(m.away,16)+'Si gana '+m.away.short+'</span>'
     +     '<div class="impact-bar-track"><div class="impact-bar-fill" style="width:'+barAway+'%"></div></div>'
-    +     '<span class="isc-pct">'+item.away.playoffPct.toFixed(0)+'%</span>'
+    +     '<span class="isc-pct">'+item.away.pct.toFixed(0)+'%</span>'
     +     '<span class="isc-rank">pos. '+item.away.avgRank.toFixed(1)+'</span>'
     +   '</div>'
     + '</div>'
-    + '<div class="impact-swing">↕ '+item.playoffSwing.toFixed(0)+' pp de diferencia en probabilidad de playoffs'
+    + '<div class="impact-swing">↕ '+item.pctSwing.toFixed(0)+' pp de diferencia en probabilidad de '+mode.short
     +   (item.rankSwing >= 0.3 ? ' · '+item.rankSwing.toFixed(1)+' posiciones de media' : '') + '</div>'
     + '</div>';
 }
@@ -875,12 +919,13 @@ function impactRowHtml(item){
 // Fila para un partido DEL PROPIO equipo: se muestra en términos de "si gana / si pierde"
 function ownMatchRowHtml(item, teamId){
   const m = item.match;
+  const mode = IMPACT_MODES[currentModalMode];
   const isHome = m.home.id === teamId;
   const opponent = isHome ? m.away : m.home;
   const winMetrics = isHome ? item.home : item.away;
   const loseMetrics = isHome ? item.away : item.home;
-  const barWin = Math.max(winMetrics.playoffPct, 2);
-  const barLose = Math.max(loseMetrics.playoffPct, 2);
+  const barWin = Math.max(winMetrics.pct, 2);
+  const barLose = Math.max(loseMetrics.pct, 2);
   return '<div class="impact-row">'
     + '<div class="impact-row-head">'
     +   '<div class="impact-match">vs '+teamLogoHtml(opponent,18)+opponent.short+'</div>'
@@ -889,16 +934,16 @@ function ownMatchRowHtml(item, teamId){
     + '<div class="impact-scenarios">'
     +   '<div class="impact-scenario"><span class="isc-label">✅ Si gana</span>'
     +     '<div class="impact-bar-track"><div class="impact-bar-fill" style="width:'+barWin+'%"></div></div>'
-    +     '<span class="isc-pct">'+winMetrics.playoffPct.toFixed(0)+'%</span>'
+    +     '<span class="isc-pct">'+winMetrics.pct.toFixed(0)+'%</span>'
     +     '<span class="isc-rank">pos. '+winMetrics.avgRank.toFixed(1)+'</span>'
     +   '</div>'
     +   '<div class="impact-scenario"><span class="isc-label">❌ Si pierde</span>'
     +     '<div class="impact-bar-track"><div class="impact-bar-fill" style="width:'+barLose+'%"></div></div>'
-    +     '<span class="isc-pct">'+loseMetrics.playoffPct.toFixed(0)+'%</span>'
+    +     '<span class="isc-pct">'+loseMetrics.pct.toFixed(0)+'%</span>'
     +     '<span class="isc-rank">pos. '+loseMetrics.avgRank.toFixed(1)+'</span>'
     +   '</div>'
     + '</div>'
-    + '<div class="impact-swing">↕ '+item.playoffSwing.toFixed(0)+' pp de diferencia en probabilidad de playoffs'
+    + '<div class="impact-swing">↕ '+item.pctSwing.toFixed(0)+' pp de diferencia en probabilidad de '+mode.short
     +   (item.rankSwing >= 0.3 ? ' · '+item.rankSwing.toFixed(1)+' posiciones de media' : '') + '</div>'
     + '</div>';
 }
@@ -916,7 +961,8 @@ function renderTeamModalResults(teamId, results){
       .sort((a,b)=> b.score - a.score)
       .slice(0, 8);
 
-    body = '<div class="modal-desc">A la izquierda, sus partidos pendientes, del más próximo al más lejano, con cómo cambian sus opciones según gane o pierda. A la derecha, los partidos de otros equipos que más pesan en su clasificación ('+TEAM_IMPACT_TRIALS.toLocaleString('es-ES')+' simulaciones por escenario; el resto de la temporada se sortea al azar en ambos casos).</div>'
+    const mode = IMPACT_MODES[currentModalMode];
+    body = '<div class="modal-desc">A la izquierda, sus partidos pendientes, del más próximo al más lejano, con cómo cambian sus opciones de <b>'+mode.zoneLabel+'</b> según gane o pierda. A la derecha, los partidos de otros equipos que más pesan en esa clasificación ('+TEAM_IMPACT_TRIALS.toLocaleString('es-ES')+' simulaciones por escenario; el resto de la temporada se sortea al azar en ambos casos).</div>'
       + '<div class="impact-columns">'
       +   '<div class="impact-col">'
       +     '<div class="impact-col-title"><span class="dot"></span>Sus próximos partidos</div>'
@@ -935,11 +981,14 @@ function renderTeamModalResults(teamId, results){
   document.getElementById('teamModalContent').innerHTML = teamModalHeaderHtml(teamId) + body;
 }
 
-function openTeamImpactModal(teamId){
+function openTeamImpactModal(teamId, mode){
+  currentModalTeamId = teamId;
+  currentModalMode = mode || currentModalMode || 'playoffs';
   document.getElementById('teamModalOverlay').classList.add('open');
   renderTeamModalLoading(teamId);
+  const threshold = IMPACT_MODES[currentModalMode].threshold;
   setTimeout(()=>{
-    const results = computeTeamImpact(teamId, TEAM_IMPACT_TRIALS);
+    const results = computeTeamImpact(teamId, TEAM_IMPACT_TRIALS, threshold);
     renderTeamModalResults(teamId, results);
   }, 30);
 }
@@ -1045,6 +1094,9 @@ function renderStandings(){
       + '<td class="stat">'+t.gw+'-'+t.gl+'</td>'
       + '<td class="stat strong">'+(t.diff>0?'+':'')+t.diff+'</td>'
       + '</tr>';
+    if(rank === 4){
+      html += '<tr class="playoff-divider"><td colspan="7"><div class="divider-line" style="--divider-color:var(--violet)"><span class="divider-text">ROADTRIP</span></div></td></tr>';
+    }
     if(rank === 6){
       html += '<tr class="playoff-divider"><td colspan="7"><div class="divider-line"><span class="divider-text">Línea de Playoffs</span></div></td></tr>';
     }
@@ -1135,7 +1187,14 @@ document.getElementById('resetBtn').addEventListener('click', resetToReal);
 document.getElementById('standingsBody').addEventListener('click', (e)=>{
   const row = e.target.closest('tr.row-team');
   if(!row) return;
-  openTeamImpactModal(row.dataset.team);
+  openTeamImpactModal(row.dataset.team, 'playoffs');
+});
+document.getElementById('teamModalContent').addEventListener('click', (e)=>{
+  const modeBtn = e.target.closest('.mode-btn');
+  if(modeBtn && currentModalTeamId){
+    const mode = modeBtn.dataset.mode;
+    if(mode !== currentModalMode) openTeamImpactModal(currentModalTeamId, mode);
+  }
 });
 document.getElementById('teamModalClose').addEventListener('click', closeTeamModal);
 document.getElementById('teamModalOverlay').addEventListener('click', (e)=>{
