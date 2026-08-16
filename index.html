@@ -823,6 +823,7 @@ const IMPACT_MODES = {
 };
 let currentModalTeamId = null;
 let currentModalMode = 'playoffs';
+let impactCache = {}; // { 'teamId::mode': {current, results} } — se invalida al cambiar cualquier pick
 
 function simulateTeamMetrics(teamId, fixedPicks, trials, threshold){
   let hitCount = 0, rankSum = 0;
@@ -987,10 +988,17 @@ function openTeamImpactModal(teamId, mode){
   currentModalMode = mode || currentModalMode || 'playoffs';
   document.getElementById('matchesView').style.display = 'none';
   document.getElementById('teamImpactView').style.display = 'block';
+  const cacheKey = teamId+'::'+currentModalMode;
+  const cached = impactCache[cacheKey];
+  if(cached){
+    renderTeamModalResults(teamId, cached.current, cached.results);
+    return;
+  }
   renderTeamModalLoading(teamId);
   const threshold = IMPACT_MODES[currentModalMode].threshold;
   setTimeout(()=>{
     const { current, results } = computeTeamImpact(teamId, TEAM_IMPACT_TRIALS, threshold);
+    impactCache[cacheKey] = { current, results };
     renderTeamModalResults(teamId, current, results);
   }, 30);
 }
@@ -1032,6 +1040,7 @@ async function loadPicks(){
   renderAll();
 }
 async function savePicks(){
+  impactCache = {}; // los picks cambiaron: las simulaciones guardadas ya no son válidas
   try{
     if(window.storage){
       await window.storage.set(STORAGE_KEY, JSON.stringify(picks));
