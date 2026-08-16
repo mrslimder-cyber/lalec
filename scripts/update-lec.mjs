@@ -67,22 +67,48 @@ async function fetchSeriesResults() {
     where: `MS.OverviewPage="${OVERVIEW_PAGE}"`,
   });
 
-  const res = await fetch(`${CARGO_ENDPOINT}?${params.toString()}`, {
-    headers: {
-      // Leaguepedia pide identificar el user-agent de scripts automatizados.
-      'User-Agent': 'maurogarih-lec-simulador/1.0 (actualizacion automatica de resultados)',
-    },
-  });
+  const url = `${CARGO_ENDPOINT}?${params.toString()}`;
 
-  if (!res.ok) {
-    throw new Error(`Leaguepedia respondió ${res.status} ${res.statusText}`);
+  // Los runners de GitHub Actions comparten IP con miles de repos que
+  // también consultan Leaguepedia, así que es normal encontrarse el
+  // límite de peticiones "ya gastado" sin que este script haya pedido
+  // nada de más. Reintentamos con esperas crecientes antes de rendirnos.
+  const MAX_ATTEMPTS = 5;
+  const WAIT_MS = [60_000, 120_000, 180_000, 300_000]; // 1, 2, 3, 5 minutos
+
+  for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt++) {
+    const res = await fetch(url, {
+      headers: {
+        // Leaguepedia pide identificar el user-agent de scripts automatizados.
+        'User-Agent': 'maurogarih-lec-simulador/1.0 (actualizacion automatica de resultados)',
+      },
+    });
+
+    if (!res.ok) {
+      throw new Error(`Leaguepedia respondió ${res.status} ${res.statusText}`);
+    }
+
+    const json = await res.json();
+
+    const isRateLimited = json.error && json.error.code === 'ratelimited';
+    if (isRateLimited) {
+      if (attempt === MAX_ATTEMPTS) {
+        throw new Error(`Cargo API error tras ${MAX_ATTEMPTS} intentos: ${json.error.info}`);
+      }
+      const wait = WAIT_MS[attempt - 1];
+      console.log(`Rate limit de Leaguepedia (intento ${attempt}/${MAX_ATTEMPTS}). Esperando ${wait / 1000}s...`);
+      await new Promise(r => setTimeout(r, wait));
+      continue;
+    }
+
+    if (json.error) {
+      throw new Error(`Cargo API error: ${json.error.info || JSON.stringify(json.error)}`);
+    }
+
+    return (json.cargoquery || []).map(row => row.title);
   }
 
-  const json = await res.json();
-  if (json.error) {
-    throw new Error(`Cargo API error: ${json.error.info || JSON.stringify(json.error)}`);
-  }
-  return (json.cargoquery || []).map(row => row.title);
+  return []; // no debería llegar aquí, pero por si acaso
 }
 
 function seriesToResult(row) {
