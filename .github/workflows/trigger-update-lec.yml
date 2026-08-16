@@ -1,0 +1,19 @@
+name: Disparar actualización LEC (vía Vercel)
+
+on:
+  # Vie(5) / Sáb(6) / Dom(0) / Lun(1) a las 19:00 y 23:00 hora de España
+  # (CEST, UTC+2, vigente durante la LEC Summer). Si esto sigue activo
+  # fuera de horario de verano (CET, UTC+1), cambia "17,21" por "18,22".
+  schedule:
+    - cron: '0 17,21 * * 5,6,0,1'
+  workflow_dispatch:
+
+jobs:
+  disparar:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Llamar al endpoint de actualización en Vercel
+        run: |
+          curl -sf -X POST "${{ secrets.LEC_UPDATE_URL }}" \
+            -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}" \
+            -w "\nHTTP %{http_code}\n"
