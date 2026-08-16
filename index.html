@@ -817,6 +817,7 @@ function renderMonteCarloResults(counts, n, fixedCount){
 // la temporada miles de veces. La diferencia de probabilidad de playoffs (y de
 // posición media) entre ambos escenarios es el "impacto" de ese partido.
 const TEAM_IMPACT_TRIALS = 3000;
+const BASE_IMPACT_TRIALS = 12000; // simulación "base" única al cargar la página, compartida por todos los equipos
 const IMPACT_MODES = {
   playoffs: { threshold:6, label:'Entra en playoffs', short:'playoffs', zoneLabel:'Playoffs (Top 6)' },
   roadtrip: { threshold:4, label:'Va al roadtrip',    short:'el ROADTRIP', zoneLabel:'Roadtrip (Top 4)' },
@@ -824,6 +825,41 @@ const IMPACT_MODES = {
 let currentModalTeamId = null;
 let currentModalMode = 'playoffs';
 let impactCache = {}; // { 'teamId::mode': {current, results} } — se invalida al cambiar cualquier pick
+let baseStats = null; // { teamId: {playoffPct, roadtripPct, avgRank} } de una simulación grande hecha una sola vez
+
+// Una única simulación de BASE_IMPACT_TRIALS escenarios que calcula, de golpe,
+// la probabilidad de playoffs y de roadtrip de los 10 equipos a la vez (igual que
+// el Monte Carlo de abajo, pero más ligera). Sirve como "current" instantáneo la
+// primera vez que se abre cualquier equipo. Se invalida en cuanto cambias un pick;
+// a partir de ahí, el "current" se recalcula al vuelo con menos simulaciones (más rápido).
+function computeBaseStats(){
+  const fixedPicks = JSON.parse(JSON.stringify(picks));
+  const counts = {};
+  TEAMS.forEach(t => counts[t.id] = new Array(TEAMS.length).fill(0));
+  for(let s=0; s<BASE_IMPACT_TRIALS; s++){
+    const standings = simulateOneScenario(fixedPicks);
+    standings.forEach((t, idx) => { counts[t.id][idx]++; });
+  }
+  const stats = {};
+  TEAMS.forEach(t=>{
+    const arr = counts[t.id];
+    const playoffPct = arr.slice(0,6).reduce((s,c)=>s+c,0) / BASE_IMPACT_TRIALS * 100;
+    const roadtripPct = arr.slice(0,4).reduce((s,c)=>s+c,0) / BASE_IMPACT_TRIALS * 100;
+    const avgRank = arr.reduce((sum,c,i)=> sum + c*(i+1), 0) / BASE_IMPACT_TRIALS;
+    stats[t.id] = { playoffPct, roadtripPct, avgRank };
+  });
+  baseStats = stats;
+}
+function scheduleBaseStats(){
+  setTimeout(computeBaseStats, 40);
+}
+// Devuelve el "current" ya calculado a partir de la simulación base, o null si aún
+// no está lista / ya no es válida (para que se recalcule al vuelo como antes).
+function quickCurrentStats(teamId, threshold){
+  if(!baseStats) return null;
+  const b = baseStats[teamId];
+  return { pct: threshold === 6 ? b.playoffPct : b.roadtripPct, avgRank: b.avgRank };
+}
 
 function simulateTeamMetrics(teamId, fixedPicks, trials, threshold){
   let hitCount = 0, rankSum = 0;
@@ -836,9 +872,9 @@ function simulateTeamMetrics(teamId, fixedPicks, trials, threshold){
   return { pct: hitCount / trials * 100, avgRank: rankSum / trials };
 }
 
-function computeTeamImpact(teamId, trials, threshold){
+function computeTeamImpact(teamId, trials, threshold, precomputedCurrent){
   const baseFixed = JSON.parse(JSON.stringify(picks));
-  const current = simulateTeamMetrics(teamId, baseFixed, trials, threshold);
+  const current = precomputedCurrent || simulateTeamMetrics(teamId, baseFixed, trials, threshold);
   const undecided = ALL_MATCHES.filter(m => !baseFixed[m.id]);
   const results = undecided.map(m=>{
     const fixedHome = { ...baseFixed, [m.id]: { winner: m.home.id, score:'2-1' } };
@@ -883,9 +919,9 @@ function teamModalHeaderHtml(teamId, current){
     + modeToggleHtml();
 }
 
-function renderTeamModalLoading(teamId){
+function renderTeamModalLoading(teamId, quickCurrent){
   const mode = IMPACT_MODES[currentModalMode];
-  document.getElementById('teamImpactContent').innerHTML = teamModalHeaderHtml(teamId, null)
+  document.getElementById('teamImpactContent').innerHTML = teamModalHeaderHtml(teamId, quickCurrent)
     + '<div class="modal-desc">Calculando qué partidos pendientes pesan más en sus opciones de '+mode.zoneLabel+', simulando miles de escenarios para cada resultado posible...</div>'
     + '<div class="modal-loading">⏳ Simulando '+TEAM_IMPACT_TRIALS.toLocaleString('es-ES')+' escenarios por partido...</div>';
 }
@@ -994,10 +1030,11 @@ function openTeamImpactModal(teamId, mode){
     renderTeamModalResults(teamId, cached.current, cached.results);
     return;
   }
-  renderTeamModalLoading(teamId);
   const threshold = IMPACT_MODES[currentModalMode].threshold;
+  const quickCurrent = quickCurrentStats(teamId, threshold); // instantáneo si la simulación base ya está lista
+  renderTeamModalLoading(teamId, quickCurrent);
   setTimeout(()=>{
-    const { current, results } = computeTeamImpact(teamId, TEAM_IMPACT_TRIALS, threshold);
+    const { current, results } = computeTeamImpact(teamId, TEAM_IMPACT_TRIALS, threshold, quickCurrent);
     impactCache[cacheKey] = { current, results };
     renderTeamModalResults(teamId, current, results);
   }, 30);
@@ -1041,6 +1078,7 @@ async function loadPicks(){
 }
 async function savePicks(){
   impactCache = {}; // los picks cambiaron: las simulaciones guardadas ya no son válidas
+  baseStats = null; // la simulación base tampoco; a partir de ahora el "current" se recalcula al vuelo
   try{
     if(window.storage){
       await window.storage.set(STORAGE_KEY, JSON.stringify(picks));
@@ -1249,7 +1287,7 @@ document.getElementById('mcRunBtn').addEventListener('click', ()=>{
   }, 30);
 });
 
-loadPicks();
+loadPicks().then(scheduleBaseStats);
 })();
 </script>
 <script defer src="/_vercel/insights/script.js"></script>
