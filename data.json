@@ -1,0 +1,74 @@
+{
+  "_readme": "Este archivo es la ÚNICA parte que el script automático (scripts/update-lec.mjs) debe reescribir. El index.html nunca se toca para actualizar resultados: solo lee este JSON al cargar la página.",
+  "teams": [
+    { "id": "g2",   "name": "G2 Esports",    "short": "G2",   "color": "#FF6B5D" },
+    { "id": "fnc",  "name": "Fnatic",        "short": "FNC",  "color": "#FFA65D" },
+    { "id": "kc",   "name": "Karmine Corp",  "short": "KC",   "color": "#E4D24C" },
+    { "id": "vit",  "name": "Team Vitality", "short": "VIT",  "color": "#9BDB5D" },
+    { "id": "th",   "name": "Team Heretics", "short": "TH",   "color": "#4CD97E" },
+    { "id": "mkoi", "name": "Movistar KOI",  "short": "MKOI", "color": "#4CD3D9" },
+    { "id": "sk",   "name": "SK Gaming",     "short": "SK",   "color": "#5DA3DB" },
+    { "id": "gx",   "name": "GIANTX",        "short": "GX",   "color": "#8C7AE6" },
+    { "id": "navi", "name": "Natus Vincere", "short": "NAVI", "color": "#C55DDB" },
+    { "id": "shf",  "name": "Shifters",      "short": "SHF",  "color": "#DB5D9B" }
+  ],
+  "schedule": [
+    { "label": "Semana 1", "range": "24–26 jul", "matches": [
+      ["kc","vit","24 jul",["kc","2-0"]],
+      ["mkoi","g2","24 jul",["g2","2-1"]],
+      ["kc","mkoi","25 jul",["kc","2-0"]],
+      ["g2","vit","25 jul",["g2","2-0"]],
+      ["kc","g2","26 jul",["kc","2-1"]],
+      ["mkoi","vit","26 jul",["vit","2-1"]]
+    ]},
+    { "label": "Semana 2", "range": "31 jul–3 ago", "matches": [
+      ["mkoi","shf","31 jul",["mkoi","2-1"]],
+      ["vit","th","31 jul",["vit","2-0"]],
+      ["kc","navi","1 ago",["kc","2-0"]],
+      ["gx","sk","1 ago",["sk","2-1"]],
+      ["fnc","mkoi","2 ago",["mkoi","2-1"]],
+      ["sk","g2","2 ago",["g2","2-0"]],
+      ["kc","th","3 ago",["kc","2-0"]],
+      ["navi","shf","3 ago",["navi","2-0"]]
+    ]},
+    { "label": "Semana 3", "range": "7–10 ago", "matches": [
+      ["th","fnc","7 ago",["th","2-1"]],
+      ["shf","gx","7 ago",["gx","2-1"]],
+      ["sk","navi","8 ago",["navi","2-1"]],
+      ["mkoi","gx","8 ago",["gx","2-0"]],
+      ["th","g2","9 ago",["g2","2-0"]],
+      ["fnc","kc","9 ago",["kc","2-0"]],
+      ["sk","vit","10 ago",["vit","2-0"]],
+      ["navi","g2","10 ago",["g2","2-0"]]
+    ]},
+    { "label": "Semana 4", "range": "14–17 ago", "matches": [
+      ["shf","sk","14 ago",["sk","2-0"]],
+      ["gx","vit","14 ago",["vit","2-1"]],
+      ["sk","fnc","15 ago",["fnc","2-0"]],
+      ["g2","shf","15 ago",["g2","2-0"]],
+      ["mkoi","navi","16 ago",["mkoi","2-0"]],
+      ["g2","fnc","16 ago",["fnc","2-0"]],
+      ["navi","th","17 ago",null],
+      ["gx","kc","17 ago",null]
+    ]},
+    { "label": "Semana 5", "range": "21–24 ago", "matches": [
+      ["th","sk","21 ago",null],
+      ["vit","navi","21 ago",null],
+      ["fnc","shf","22 ago",null],
+      ["sk","mkoi","22 ago",null],
+      ["th","gx","23 ago",null],
+      ["shf","kc","23 ago",null],
+      ["navi","fnc","24 ago",null],
+      ["gx","g2","24 ago",null]
+    ]},
+    { "label": "Semana 6", "range": "28–30 ago", "matches": [
+      ["shf","th","28 ago",null],
+      ["vit","fnc","28 ago",null],
+      ["kc","sk","29 ago",null],
+      ["navi","gx","29 ago",null],
+      ["shf","vit","30 ago",null],
+      ["mkoi","th","30 ago",null],
+      ["fnc","gx","30 ago",null]
+    ]}
+  ]
+}

@@ -472,19 +472,11 @@ tr.row-team:hover td{background:rgba(255,255,255,0.03);}
 <script>
 (function(){
 
-const TEAMS = [
-  {id:'g2',   name:'G2 Esports',     short:'G2',   color:'#FF6B5D'},
-  {id:'fnc',  name:'Fnatic',         short:'FNC',  color:'#FFA65D'},
-  {id:'kc',   name:'Karmine Corp',   short:'KC',   color:'#E4D24C'},
-  {id:'vit',  name:'Team Vitality',  short:'VIT',  color:'#9BDB5D'},
-  {id:'th',   name:'Team Heretics',  short:'TH',   color:'#4CD97E'},
-  {id:'mkoi', name:'Movistar KOI',   short:'MKOI', color:'#4CD3D9'},
-  {id:'sk',   name:'SK Gaming',      short:'SK',   color:'#5DA3DB'},
-  {id:'gx',   name:'GIANTX',         short:'GX',   color:'#8C7AE6'},
-  {id:'navi', name:'Natus Vincere',  short:'NAVI', color:'#C55DDB'},
-  {id:'shf',  name:'Shifters',       short:'SHF',  color:'#DB5D9B'},
-];
-const TEAM_MAP = Object.fromEntries(TEAMS.map(t=>[t.id,t]));
+// ---- Datos cargados en tiempo de ejecución desde data.json ----
+// (antes iban aquí incrustados; ahora viven aparte para que el proceso de
+// actualización automática solo tenga que reescribir ese JSON, nunca este HTML)
+let TEAMS = [];
+let TEAM_MAP = {};
 
 // ---- Team logos: cargados en directo desde Leaguepedia (Special:FilePath
 // siempre sirve el archivo "<Equipo>logo square.png" vigente en el wiki, así
@@ -507,96 +499,55 @@ window.__logoFallback = function(imgEl, teamId){
   wrap.innerHTML = '<span class="team-logo-fallback" style="background:'+t.color+'22;border-color:'+t.color+';color:'+t.color+';font-size:'+Math.max(8,Math.round(size*0.3))+'px;">'+t.short.slice(0,4)+'</span>';
 };
 
-// ---- Real LEC 2026 Summer regular-season schedule (single round robin, Bo3) ----
-// Each entry: [homeId, awayId, dateLabel, result-or-null]
-// result = [winnerId, score] for matches already played (through Aug 8, 2026)
-const RAW_SCHEDULE = [
-  { label:'Semana 1', range:'24–26 jul', matches:[
-    ['kc','vit','24 jul',['kc','2-0']],
-    ['mkoi','g2','24 jul',['g2','2-1']],
-    ['kc','mkoi','25 jul',['kc','2-0']],
-    ['g2','vit','25 jul',['g2','2-0']],
-    ['kc','g2','26 jul',['kc','2-1']],
-    ['mkoi','vit','26 jul',['vit','2-1']],
-  ]},
-  { label:'Semana 2', range:'31 jul–3 ago', matches:[
-    ['mkoi','shf','31 jul',['mkoi','2-1']],
-    ['vit','th','31 jul',['vit','2-0']],
-    ['kc','navi','1 ago',['kc','2-0']],
-    ['gx','sk','1 ago',['sk','2-1']],
-    ['fnc','mkoi','2 ago',['mkoi','2-1']],
-    ['sk','g2','2 ago',['g2','2-0']],
-    ['kc','th','3 ago',['kc','2-0']],
-    ['navi','shf','3 ago',['navi','2-0']],
-  ]},
-  { label:'Semana 3', range:'7–10 ago', matches:[
-    ['th','fnc','7 ago',['th','2-1']],
-    ['shf','gx','7 ago',['gx','2-1']],
-    ['sk','navi','8 ago',['navi','2-1']],
-    ['mkoi','gx','8 ago',['gx','2-0']],
-    ['th','g2','9 ago',['g2','2-0']],
-    ['fnc','kc','9 ago',['kc','2-0']],
-    ['sk','vit','10 ago',['vit','2-0']],
-    ['navi','g2','10 ago',['g2','2-0']],
-  ]},
-  { label:'Semana 4', range:'14–17 ago', matches:[
-    ['shf','sk','14 ago',['sk','2-0']],
-    ['gx','vit','14 ago',['vit','2-1']],
-    ['sk','fnc','15 ago',['fnc','2-0']],
-    ['g2','shf','15 ago',['g2','2-0']],
-    ['mkoi','navi','16 ago',['mkoi','2-0']],
-    ['g2','fnc','16 ago',['fnc','2-0']],
-    ['navi','th','17 ago',null],
-    ['gx','kc','17 ago',null],
-  ]},
-  { label:'Semana 5', range:'21–24 ago', matches:[
-    ['th','sk','21 ago',null],
-    ['vit','navi','21 ago',null],
-    ['fnc','shf','22 ago',null],
-    ['sk','mkoi','22 ago',null],
-    ['th','gx','23 ago',null],
-    ['shf','kc','23 ago',null],
-    ['navi','fnc','24 ago',null],
-    ['gx','g2','24 ago',null],
-  ]},
-  { label:'Semana 6', range:'28–30 ago', matches:[
-    ['shf','th','28 ago',null],
-    ['vit','fnc','28 ago',null],
-    ['kc','sk','29 ago',null],
-    ['navi','gx','29 ago',null],
-    ['shf','vit','30 ago',null],
-    ['mkoi','th','30 ago',null],
-    ['fnc','gx','30 ago',null],
-  ]},
-];
-
-// ---- Build schedule with ids and flatten ----
-const SCHEDULE = RAW_SCHEDULE.map(week=>({
-  label: week.label,
-  range: week.range,
-  matches: week.matches.map(([homeId,awayId,date,result])=>({
-    id: homeId+'_'+awayId,
-    home: TEAM_MAP[homeId],
-    away: TEAM_MAP[awayId],
-    date,
-    played: !!result,
-    result: result ? { winner: result[0], score: result[1] } : null
-  }))
-}));
-const ALL_MATCHES = SCHEDULE.flatMap(w=>w.matches);
-const TOTAL_MATCHES = ALL_MATCHES.length;
-const MATCH_ORDER = {};
-ALL_MATCHES.forEach((m,i)=>{ MATCH_ORDER[m.id] = i; });
-
-// Real results pre-loaded as the baseline
-const REAL_RESULTS = {};
-ALL_MATCHES.forEach(m=>{ if(m.result) REAL_RESULTS[m.id] = { winner: m.result.winner, score: m.result.score }; });
+// ---- Schedule/results: rellenados por loadScheduleData() a partir de data.json ----
+let SCHEDULE = [];
+let ALL_MATCHES = [];
+let TOTAL_MATCHES = 0;
+let MATCH_ORDER = {};
+let REAL_RESULTS = {};
 
 // ---- State ----
-let picks = { ...JSON.parse(JSON.stringify(REAL_RESULTS)) }; // matchId -> {winner, score}
+let picks = {}; // matchId -> {winner, score}
 let prevRanks = {};    // teamId -> rank before the most recent change
-let activeRound = 3;
+let activeRound = 0;
 const STORAGE_KEY = 'picks-v2-real-schedule';
+
+// Carga data.json (equipos + calendario + resultados), construye las
+// estructuras derivadas y decide en qué semana aterrizar. Este es el único
+// sitio que sabe leer el JSON externo; todo lo demás sigue igual que antes.
+async function loadScheduleData(){
+  const res = await fetch('data.json', { cache: 'no-store' });
+  const raw = await res.json();
+
+  TEAMS = raw.teams;
+  TEAM_MAP = Object.fromEntries(TEAMS.map(t=>[t.id,t]));
+
+  SCHEDULE = raw.schedule.map(week=>({
+    label: week.label,
+    range: week.range,
+    matches: week.matches.map(([homeId,awayId,date,result])=>({
+      id: homeId+'_'+awayId,
+      home: TEAM_MAP[homeId],
+      away: TEAM_MAP[awayId],
+      date,
+      played: !!result,
+      result: result ? { winner: result[0], score: result[1] } : null
+    }))
+  }));
+  ALL_MATCHES = SCHEDULE.flatMap(w=>w.matches);
+  TOTAL_MATCHES = ALL_MATCHES.length;
+  MATCH_ORDER = {};
+  ALL_MATCHES.forEach((m,i)=>{ MATCH_ORDER[m.id] = i; });
+
+  REAL_RESULTS = {};
+  ALL_MATCHES.forEach(m=>{ if(m.result) REAL_RESULTS[m.id] = { winner: m.result.winner, score: m.result.score }; });
+  picks = { ...JSON.parse(JSON.stringify(REAL_RESULTS)) };
+
+  // Salta automáticamente a la primera semana con partidos pendientes;
+  // si la temporada ya está completa, se queda en la última semana.
+  const firstUnplayed = SCHEDULE.findIndex(week => week.matches.some(m => !m.played));
+  activeRound = firstUnplayed === -1 ? SCHEDULE.length - 1 : firstUnplayed;
+}
 
 function ranksMap(standingsArr){
   const m = {};
@@ -1287,7 +1238,14 @@ document.getElementById('mcRunBtn').addEventListener('click', ()=>{
   }, 30);
 });
 
-loadPicks().then(scheduleBaseStats);
+loadScheduleData()
+  .then(loadPicks)
+  .then(scheduleBaseStats)
+  .catch(err=>{
+    console.error('No se pudo cargar data.json', err);
+    document.getElementById('standingsBody').innerHTML =
+      '<tr><td colspan="7" style="padding:16px;color:var(--danger)">No se pudieron cargar los datos del simulador.</td></tr>';
+  });
 })();
 </script>
 <script defer src="/_vercel/insights/script.js"></script>
