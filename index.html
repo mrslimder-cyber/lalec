@@ -1224,23 +1224,28 @@ document.addEventListener('keydown', (e)=>{
   if(e.key === 'Escape' && currentModalTeamId) closeTeamModal();
 });
 
-document.getElementById('mcRunBtn').addEventListener('click', ()=>{
+function triggerMonteCarlo(isAuto){
   const btn = document.getElementById('mcRunBtn');
   btn.disabled = true;
-  const originalLabel = btn.textContent;
   btn.textContent = '⏳ Simulando 100K escenarios...';
   const lockedNow = Object.keys(picks).length;
-  document.getElementById('mcStatus').textContent = 'Calculando con ' + lockedNow + ' partidas fijadas... esto tarda un instante.';
+  document.getElementById('mcStatus').textContent = (isAuto ? 'Cargando automáticamente · ' : 'Calculando con ')
+    + lockedNow + ' partidas fijadas... esto tarda un instante.';
   setTimeout(()=>{
     runMonteCarlo(100000);
     btn.disabled = false;
     btn.textContent = '🔁 Repetir 100K simulaciones';
   }, 30);
-});
+}
+
+document.getElementById('mcRunBtn').addEventListener('click', ()=> triggerMonteCarlo(false));
 
 loadScheduleData()
   .then(loadPicks)
-  .then(scheduleBaseStats)
+  .then(()=>{
+    scheduleBaseStats();
+    triggerMonteCarlo(true); // simulación Monte Carlo ya cargada al abrir la página, sin esperar al botón
+  })
   .catch(err=>{
     console.error('No se pudo cargar data.json', err);
     document.getElementById('standingsBody').innerHTML =
