@@ -414,8 +414,10 @@ tr.row-team:hover td{background:rgba(255,255,255,0.03);}
         <span><span class="arrow down">▼</span> Baja desde tu última elección</span>
       </div>
       <div class="standings-hint">👆 Haz clic en un equipo para ver los partidos más impactantes de su clasificación.</div>
-      <div class="tiebreak-note head">Criterio de desempate (Reglamento LEC v3.1, secciones 6.6 y 6.7):</div>
+      <div class="tiebreak-note head">Criterio de clasificación (Reglamento LEC v3.1, secciones 6.6 y 6.7):</div>
       <div class="tiebreak-note">→ victorias</div>
+      <div class="tiebreak-note">→ <b>% de mapas ganados</b> (temporada completa)</div>
+      <div class="tiebreak-note head" style="padding-top:6px;">Si persiste el empate en ambos, desempate:</div>
       <div class="tiebreak-note">→ <b>enfrentamiento directo</b> (entre los equipos empatados)</div>
       <div class="tiebreak-note">→ % de mapas ganados en el enfrentamiento directo</div>
       <div class="tiebreak-note">→ <b>Strength of Victory</b> por victorias</div>
@@ -556,8 +558,8 @@ function ranksMap(standingsArr){
 }
 
 // ---- Summer Split Tiebreakers (LEC Rulebook v3.1, sections 6.6 & 6.7) ----
-// Standings are ranked first by Match wins. Teams tied on Match wins are
-// broken, in order, by:
+// Standings are ranked first by Match wins, then by season-wide Game Win
+// Percentage. Teams STILL tied after both of those are broken, in order, by:
 //   1) Head-to-Head Match Record (only among the tied teams)
 //   2) Head-to-Head Game Win Percentage (only among the tied teams)
 //   3) Strength of Victory (SoV) using Match wins of defeated opponents
@@ -653,6 +655,36 @@ function resolveTiedGroup(group, statsById, picksSource, metricIndex){
   return result;
 }
 
+// Game Win Percentage de temporada completa (no solo enfrentamiento directo).
+function gameWinPct(id, statsById){
+  const s = statsById[id];
+  const total = s.gw + s.gl;
+  return total > 0 ? s.gw / total : 0;
+}
+
+// Un grupo empatado en victorias se separa primero por Game Win Percentage
+// global (regla del reglamento: standings = victorias + Game Win %). Solo
+// los equipos que sigan empatados en AMBAS métricas entran a la cadena de
+// desempates (head-to-head, SoV, etc.).
+function resolveWinsGroup(group, statsById, picksSource){
+  if(group.length <= 1) return group;
+  const scored = group.map(id => ({ id, val: gameWinPct(id, statsById) }));
+  scored.sort((a,b)=> b.val - a.val);
+  const clusters = [];
+  let cur = [scored[0]];
+  for(let k=1; k<scored.length; k++){
+    if(Math.abs(scored[k].val - cur[0].val) < 1e-9) cur.push(scored[k]);
+    else { clusters.push(cur); cur = [scored[k]]; }
+  }
+  clusters.push(cur);
+  let result = [];
+  clusters.forEach(cluster=>{
+    const ids = cluster.map(c=>c.id);
+    result = result.concat(ids.length === 1 ? ids : resolveTiedGroup(ids, statsById, picksSource, 0));
+  });
+  return result;
+}
+
 function computeStandingsCore(picksSource){
   const table = {};
   TEAMS.forEach(t => table[t.id] = {w:0,l:0,gw:0,gl:0,pj:0});
@@ -673,7 +705,7 @@ function computeStandingsCore(picksSource){
     let j = i+1;
     while(j < idsByWinsDesc.length && table[idsByWinsDesc[j]].w === table[idsByWinsDesc[i]].w) j++;
     const group = idsByWinsDesc.slice(i, j);
-    const resolved = group.length > 1 ? resolveTiedGroup(group, table, picksSource, 0) : group;
+    const resolved = group.length > 1 ? resolveWinsGroup(group, table, picksSource) : group;
     orderedIds.push(...resolved);
     i = j;
   }
