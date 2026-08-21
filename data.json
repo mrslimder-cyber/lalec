@@ -53,7 +53,7 @@
     ]},
     { "label": "Semana 5", "range": "21–24 ago", "matches": [
       ["th","sk","21 ago",["th","2-0"]],
-      ["vit","navi","21 ago",null],
+      ["vit","navi","21 ago",["vit","2-1"]],
       ["fnc","shf","22 ago",null],
       ["sk","mkoi","22 ago",null],
       ["th","gx","23 ago",null],
