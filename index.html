@@ -751,9 +751,7 @@ function runMonteCarlo(n){
 function pctLabel(count, n){
   if(count <= 0) return '—';
   const pct = (count / n) * 100;
-  if(pct >= 99.95) return '100%';
-  if(pct < 0.05) return '<0.1%';
-  return pct.toFixed(1) + '%';
+  return pct.toFixed(2) + '%';
 }
 
 function renderMonteCarloResults(counts, n, fixedCount){
@@ -782,7 +780,7 @@ function renderMonteCarloResults(counts, n, fixedCount){
       const alpha = count > 0 ? Math.min(0.65, 0.08 + (pct/100)*0.7) : 0;
       tds += '<td class="pos-cell" style="background:rgba('+rgb+','+alpha.toFixed(2)+')">'+pctLabel(count, n)+'</td>';
     }
-    const playoffDisplay = r.playoffPct <= 0 ? '—' : (r.playoffPct >= 99.95 ? '100%' : r.playoffPct.toFixed(1)+'%');
+    const playoffDisplay = r.playoffPct <= 0 ? '—' : r.playoffPct.toFixed(2)+'%';
     tds += '<td class="pos-cell strong">'+playoffDisplay+'</td>';
     body += '<tr>'+tds+'</tr>';
   });
