@@ -1262,7 +1262,7 @@ function triggerMonteCarlo(isAuto){
   document.getElementById('mcStatus').textContent = (isAuto ? 'Cargando automáticamente · ' : 'Calculando con ')
     + lockedNow + ' partidas fijadas... esto tarda un instante.';
   setTimeout(()=>{
-    runMonteCarlo(100000);
+    runMonteCarlo(300000);
     btn.disabled = false;
     btn.textContent = '🔁 Repetir 100K simulaciones';
   }, 30);
