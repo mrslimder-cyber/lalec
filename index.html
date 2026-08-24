@@ -394,6 +394,43 @@ tr.row-team:hover td{background:rgba(255,255,255,0.03);}
 .impact-scenario .isc-rank{width:64px; text-align:right; color:var(--text-faint); font-size:10.5px; flex-shrink:0; font-family:'JetBrains Mono',monospace;}
 .impact-swing{font-family:'JetBrains Mono',monospace; font-size:10.5px; color:var(--gold); margin-top:8px; font-weight:600;}
 .impact-empty{text-align:center; color:var(--text-dim); font-size:13px; padding:30px 6px;}
+
+/* ---------- Playoffs bracket panel ---------- */
+.pf-panel{margin-top:26px; background:var(--panel); border:1px solid var(--border);}
+.seeds-strip{display:flex; gap:9px; flex-wrap:wrap;}
+.seed-chip{display:flex; align-items:center; gap:8px; padding:8px 12px 8px 8px; background:var(--panel-2); border:1px solid var(--border-soft);}
+.seed-chip .snum{font-family:'JetBrains Mono',monospace; font-weight:700; font-size:12px; color:var(--text-faint); width:16px; text-align:center;}
+.seed-chip .sname{font-size:12.5px; font-weight:600;}
+.seed-note{font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--text-faint); margin-top:12px; line-height:1.6;}
+.bracket{display:grid; grid-template-columns:repeat(4,1fr); gap:16px; align-items:start; margin-top:18px;}
+@media (max-width:1000px){.bracket{grid-template-columns:1fr 1fr;}}
+@media (max-width:620px){.bracket{grid-template-columns:1fr;}}
+.bcol{display:flex; flex-direction:column; gap:14px;}
+.bcol-label{font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:1.5px; text-transform:uppercase; color:var(--text-faint); padding-bottom:2px; border-bottom:1px dashed var(--border); margin-bottom:2px;}
+.bcol-label.upper{color:var(--accent);}
+.bcol-label.lower{color:var(--violet);}
+.bcol-label.final{color:var(--gold);}
+.bracket .match-card.pending{opacity:.45;}
+.bracket .match-card .mtag{font-size:9.5px; letter-spacing:1px; color:var(--text-faint); font-family:'JetBrains Mono',monospace; text-transform:uppercase; margin-bottom:8px; display:block;}
+.bracket .team-pick{padding:8px 10px; margin-bottom:6px;}
+.bracket .team-pick.locked{cursor:default;}
+.placeholder-slot{display:flex; align-items:center; gap:9px; padding:8px 10px; border:1px dashed var(--border); color:var(--text-faint); font-size:11.5px; font-family:'JetBrains Mono',monospace; margin-bottom:6px;}
+.choice-card{background:var(--panel); border:1px solid var(--gold); padding:14px; margin-bottom:14px;}
+.choice-card .ctitle{font-family:'Big Shoulders Display',sans-serif; font-size:15px; font-weight:700; color:var(--gold); margin-bottom:9px; text-transform:uppercase; letter-spacing:.3px;}
+.choice-opts{display:flex; gap:8px;}
+.choice-opt{flex:1; display:flex; align-items:center; gap:8px; padding:9px 10px; border:1px solid var(--border); background:var(--panel-2); cursor:pointer; transition:.15s ease;}
+.choice-opt:hover{border-color:var(--gold);}
+.choice-opt.chosen{background:rgba(255,178,56,0.1); border-color:var(--gold);}
+.choice-opt .tp-name{font-size:12px;}
+.msi-box{display:flex; gap:10px; flex-wrap:wrap; margin-top:14px; padding-top:14px; border-top:1px solid var(--border-soft);}
+.msi-team{display:flex; align-items:center; gap:8px; background:var(--panel-2); border:1px solid var(--gold); padding:8px 12px;}
+.msi-team .tp-name{font-size:12.5px; font-weight:600; color:var(--text);}
+.msi-label{font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:1px; color:var(--gold); text-transform:uppercase; width:100%; margin-bottom:2px;}
+.points-grid{display:grid; grid-template-columns:repeat(auto-fit,minmax(190px,1fr)); gap:10px; margin-top:16px;}
+.points-row{display:flex; justify-content:space-between; align-items:center; padding:9px 12px; background:var(--panel-2); border:1px solid var(--border-soft); font-size:12px;}
+.points-row b{font-family:'JetBrains Mono',monospace; color:var(--accent); font-size:13px;}
+.soon-badge{font-family:'JetBrains Mono',monospace; font-size:9.5px; font-weight:700; letter-spacing:1px; color:var(--gold); background:rgba(255,178,56,0.08); border:1px solid rgba(255,178,56,0.35); padding:3px 8px; text-transform:uppercase;}
+.pf-resetbtn{margin-top:16px;}
 </style>
 </head>
 <body>
@@ -410,6 +447,7 @@ tr.row-team:hover td{background:rgba(255,255,255,0.03);}
         <span class="header-credit-label">CREADO:</span>
         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"></path></svg>
       </a>
+      <a class="header-credit" href="#playoffsPanel" aria-label="Predicciones de Playoffs">🏆 Predicciones de Playoffs →</a>
       <div class="header-stats" id="headerStats"></div>
     </div>
   </header>
@@ -500,6 +538,35 @@ tr.row-team:hover td{background:rgba(255,255,255,0.03);}
         <span>Tono más intenso = mayor probabilidad</span>
         <span>«—» = 0% en 100K simulaciones</span>
       </div>
+    </div>
+  </div>
+
+  <!-- PLAYOFFS BRACKET -->
+  <div class="pf-panel cut-lg" id="playoffsPanel">
+    <div style="padding:22px 22px 24px;">
+      <div class="panel-title"><span class="dot" style="background:var(--gold);"></span>Predicciones de Playoffs</div>
+      <div class="mc-desc" style="margin-bottom:16px;">Bracket oficial de playoffs (formato con elección de rival), calculado en directo con la <b>clasificación actual de arriba</b> — cambia cualquier resultado del simulador y los seeds del bracket se actualizan solos.</div>
+      <div class="seeds-strip" id="pfSeedsStrip"></div>
+      <div class="seed-note" id="pfSeedsNote"></div>
+
+      <div class="bracket" id="pfBracketGrid"></div>
+      <div class="msi-box" id="pfMsiBox" style="display:none;">
+        <div class="msi-label">🏆 Clasificados a MSI</div>
+        <div id="pfMsiTeams" style="display:flex; gap:10px; flex-wrap:wrap;"></div>
+      </div>
+
+      <button class="action danger pf-resetbtn" id="pfResetBtn">↺ Borrar mi predicción de playoffs</button>
+
+      <div class="panel-title" style="margin-top:24px;"><span class="dot" style="background:var(--gold);"></span>Sistema de puntos <span class="soon-badge" style="margin-left:6px;">Ranking próximamente</span></div>
+      <div class="points-grid">
+        <div class="points-row"><span>Acertar la elección del 1er seed</span><b>+1</b></div>
+        <div class="points-row"><span>Ganador Upper/Lower Ronda 1</span><b>+1 c/u</b></div>
+        <div class="points-row"><span>Ganador Upper/Lower Ronda 2</span><b>+2 c/u</b></div>
+        <div class="points-row"><span>Ganador Lower Ronda 3</span><b>+3</b></div>
+        <div class="points-row"><span>Los 2 finalistas (MSI)</span><b>+2</b></div>
+        <div class="points-row"><span>Campeón de la Split Final</span><b>+5</b></div>
+      </div>
+      <div class="seed-note" style="margin-top:14px;">Tu predicción de playoffs se guarda en este navegador, aparte de tus elecciones de la fase regular. El 1º y 2º seed pasan directos al Upper Bracket; el 1er seed elige a cuál de los dos, 3º o 4º, enfrentar en el Upper Round 1, y al no elegido le toca el 2º seed. El 5º y 6º empiezan en el Lower Bracket. Quien pierda en el Upper Round 1 cae al Lower Bracket, pero el seeding importa: de los dos perdedores, el de mejor seed juega contra el 6º (rival más asequible) y el de peor seed contra el 5º. El resto es eliminación directa hasta la Split Final; los dos finalistas clasifican a MSI. El ranking global entre usuarios llegará más adelante.</div>
     </div>
   </div>
 
@@ -1244,6 +1311,7 @@ async function loadPicks(){
       }
     }
   }catch(e){ /* nothing stored yet, keep real results as baseline */ }
+  await loadBracketPicks();
   prevRanks = ranksMap(computeStandings());
   renderAll();
 }
@@ -1406,12 +1474,180 @@ function scoreRowHtml(matchId, score){
     + '</div>';
 }
 
+// ---------- Playoffs bracket (predicción aparte de la fase regular) ----------
+// Usa computeStandings() -> los seeds se recalculan con lo que sea que esté
+// fijado ahora mismo en el simulador de arriba (resultados reales + tus
+// elecciones hipotéticas), así que cambia solo cada vez que cambias un pick.
+let bracketPicks = {}; // { choice, m1..m8 -> {winner:id} }
+const BRACKET_STORAGE_KEY = 'bracket-picks-v1';
+
+async function loadBracketPicks(){
+  try{
+    if(window.storage){
+      const res = await window.storage.get(BRACKET_STORAGE_KEY);
+      if(res && res.value) bracketPicks = JSON.parse(res.value);
+    }
+  }catch(e){ /* nada guardado todavía */ }
+}
+async function saveBracketPicks(){
+  try{
+    if(window.storage){
+      await window.storage.set(BRACKET_STORAGE_KEY, JSON.stringify(bracketPicks));
+    }
+  }catch(e){ console.error('No se pudo guardar la predicción de playoffs', e); }
+}
+function clearBracketDownstream(fromKey){
+  const order = ['choice','m1','m2','m3','m4','m5','m6','m7','m8'];
+  const idx = order.indexOf(fromKey);
+  order.slice(idx+1).forEach(k=>{ delete bracketPicks[k]; });
+}
+
+function pfTeamRow(mkey, team, isWinner, isLoser){
+  return '<div class="team-pick '+(isWinner?'winner':'')+(isLoser?' loser':'')+'" data-mkey="'+mkey+'" data-team="'+team.id+'">'
+    + teamLogoHtml(team,22) + '<div class="tp-name">'+team.name+'</div><div class="tp-check">✓</div></div>';
+}
+function pfMatchCard(mkey, home, away, winnerId, tag){
+  let html = '<div class="match-card">';
+  if(tag) html += '<span class="mtag">'+tag+'</span>';
+  html += pfTeamRow(mkey, home, winnerId===home.id, winnerId && winnerId!==home.id);
+  html += '<div class="vs-label">VS</div>';
+  html += pfTeamRow(mkey, away, winnerId===away.id, winnerId && winnerId!==away.id);
+  html += '</div>';
+  return html;
+}
+function pfPending(tag, placeholderText){
+  return '<div class="match-card pending"><span class="mtag">'+tag+'</span><div class="placeholder-slot">'+placeholderText+'</div></div>';
+}
+function pfChoiceOpt(team){
+  const chosen = bracketPicks.choice === team.id ? ' chosen' : '';
+  return '<div class="choice-opt'+chosen+'" data-choice="'+team.id+'">'+teamLogoHtml(team,22)+'<div class="tp-name">'+team.name+'</div></div>';
+}
+
+function renderPlayoffBracket(){
+  const strip = document.getElementById('pfSeedsStrip');
+  if(!strip) return; // sección aún no cargada
+
+  const standings = computeStandings();
+  const seeds = standings.slice(0,6);
+  strip.innerHTML = seeds.map((t,i)=>
+    '<div class="seed-chip"><span class="snum">'+(i+1)+'</span>'+teamLogoHtml(t,22)+'<span class="sname">'+t.short+'</span></div>'
+  ).join('');
+  document.getElementById('pfSeedsNote').textContent =
+    'Seeds calculados con la clasificación actual de arriba (' + Object.keys(picks).length + ' de ' + TOTAL_MATCHES + ' partidas fijadas). Cambia cualquier partido del simulador y se recalculan solos.';
+
+  const [seed1,seed2,seed3,seed4,seed5,seed6] = seeds;
+  const grid = document.getElementById('pfBracketGrid');
+
+  const choiceHtml = '<div class="choice-card">'
+    + '<div class="ctitle">🎯 ¿A quién elige el 1er seed ('+seed1.short+')?</div>'
+    + '<div class="choice-opts">'+pfChoiceOpt(seed3)+pfChoiceOpt(seed4)+'</div></div>';
+
+  const chosenId = bracketPicks.choice;
+  const notChosen = chosenId === seed3.id ? seed4 : (chosenId === seed4.id ? seed3 : null);
+
+  let m1Html, m2Html;
+  if(chosenId){
+    m1Html = pfMatchCard('m1', seed1, TEAM_MAP[chosenId], bracketPicks.m1 && bracketPicks.m1.winner, 'Upper Round 1 · Partido 1');
+    m2Html = pfMatchCard('m2', seed2, notChosen, bracketPicks.m2 && bracketPicks.m2.winner, 'Upper Round 1 · Partido 2');
+  } else {
+    m1Html = pfPending('Upper Round 1 · Partido 1', seed1.short+' vs (elección pendiente)');
+    m2Html = pfPending('Upper Round 1 · Partido 2', seed2.short+' vs (elección pendiente)');
+  }
+
+  const w1 = bracketPicks.m1 && bracketPicks.m1.winner, w2 = bracketPicks.m2 && bracketPicks.m2.winner;
+  let loser1=null, loser2=null;
+  if(chosenId && w1) loser1 = w1 === seed1.id ? TEAM_MAP[chosenId] : seed1;
+  if(chosenId && w2) loser2 = w2 === seed2.id ? notChosen : seed2;
+
+  let m3Html, m4Html;
+  if(loser1 && loser2){
+    const idx1 = seeds.findIndex(t=>t.id===loser1.id), idx2 = seeds.findIndex(t=>t.id===loser2.id);
+    const betterLoser = idx1 < idx2 ? loser1 : loser2;
+    const worseLoser = idx1 < idx2 ? loser2 : loser1;
+    m4Html = pfMatchCard('m4', seed6, betterLoser, bracketPicks.m4 && bracketPicks.m4.winner, 'Lower Round 1 · vs 6º (mejor seed perdedor)');
+    m3Html = pfMatchCard('m3', seed5, worseLoser, bracketPicks.m3 && bracketPicks.m3.winner, 'Lower Round 1 · vs 5º (peor seed perdedor)');
+  } else {
+    m4Html = pfPending('Lower Round 1 · vs 6º', seed6.short+' vs (pendiente Upper R1)');
+    m3Html = pfPending('Lower Round 1 · vs 5º', seed5.short+' vs (pendiente Upper R1)');
+  }
+
+  let m5Html;
+  if(w1 && w2) m5Html = pfMatchCard('m5', TEAM_MAP[w1], TEAM_MAP[w2], bracketPicks.m5 && bracketPicks.m5.winner, 'Upper Round 2');
+  else m5Html = pfPending('Upper Round 2', 'Ganador P1 vs Ganador P2');
+
+  const w3 = bracketPicks.m3 && bracketPicks.m3.winner, w4 = bracketPicks.m4 && bracketPicks.m4.winner;
+  let m6Html;
+  if(w3 && w4) m6Html = pfMatchCard('m6', TEAM_MAP[w4], TEAM_MAP[w3], bracketPicks.m6 && bracketPicks.m6.winner, 'Lower Round 2');
+  else m6Html = pfPending('Lower Round 2', 'Ganador M3 vs Ganador M4');
+
+  const w5 = bracketPicks.m5 && bracketPicks.m5.winner, w6 = bracketPicks.m6 && bracketPicks.m6.winner;
+  let m7Html;
+  if(w5 && w6){
+    const loser5 = w5 === w1 ? TEAM_MAP[w2] : TEAM_MAP[w1];
+    m7Html = pfMatchCard('m7', loser5, TEAM_MAP[w6], bracketPicks.m7 && bracketPicks.m7.winner, 'Lower Round 3');
+  } else {
+    m7Html = pfPending('Lower Round 3', 'Perdedor M5 vs Ganador M6');
+  }
+
+  const w7 = bracketPicks.m7 && bracketPicks.m7.winner;
+  let m8Html;
+  if(w5 && w7) m8Html = pfMatchCard('m8', TEAM_MAP[w5], TEAM_MAP[w7], bracketPicks.m8 && bracketPicks.m8.winner, 'Split Final');
+  else m8Html = pfPending('Split Final', 'Ganador M5 vs Ganador M7');
+
+  grid.innerHTML =
+      '<div class="bcol"><div class="bcol-label upper">Upper Round 1</div>'+choiceHtml+m1Html+m2Html+'</div>'
+    + '<div class="bcol"><div class="bcol-label upper">Upper Round 2</div>'+m5Html
+        +'<div class="bcol-label lower" style="margin-top:6px;">Lower Round 1</div>'+m3Html+m4Html+'</div>'
+    + '<div class="bcol"><div class="bcol-label lower">Lower Round 2</div>'+m6Html+'</div>'
+    + '<div class="bcol"><div class="bcol-label lower">Lower Round 3</div>'+m7Html
+        +'<div class="bcol-label final" style="margin-top:6px;">Split Final</div>'+m8Html+'</div>';
+
+  const msiBox = document.getElementById('pfMsiBox');
+  if(w5 && w7){
+    msiBox.style.display = '';
+    document.getElementById('pfMsiTeams').innerHTML =
+      '<div class="msi-team">'+teamLogoHtml(TEAM_MAP[w5],20)+'<span class="tp-name">'+TEAM_MAP[w5].name+'</span></div>'
+    + '<div class="msi-team">'+teamLogoHtml(TEAM_MAP[w7],20)+'<span class="tp-name">'+TEAM_MAP[w7].name+'</span></div>';
+  } else {
+    msiBox.style.display = 'none';
+  }
+}
+
+document.getElementById('pfBracketGrid').addEventListener('click', (e)=>{
+  const choiceEl = e.target.closest('[data-choice]');
+  if(choiceEl){
+    if(bracketPicks.choice !== choiceEl.dataset.choice){
+      bracketPicks.choice = choiceEl.dataset.choice;
+      clearBracketDownstream('choice');
+      saveBracketPicks(); renderPlayoffBracket();
+    }
+    return;
+  }
+  const teamEl = e.target.closest('.team-pick');
+  if(teamEl){
+    const mkey = teamEl.dataset.mkey, teamId = teamEl.dataset.team;
+    const current = bracketPicks[mkey] && bracketPicks[mkey].winner;
+    if(current !== teamId){
+      bracketPicks[mkey] = { winner: teamId };
+      clearBracketDownstream(mkey);
+      saveBracketPicks(); renderPlayoffBracket();
+    }
+    return;
+  }
+});
+document.getElementById('pfResetBtn').addEventListener('click', ()=>{
+  bracketPicks = {};
+  saveBracketPicks();
+  renderPlayoffBracket();
+});
+
 function renderAll(){
   renderProgress();
   renderHeaderStats();
   renderStandings();
   renderTabs();
   renderMatches();
+  renderPlayoffBracket();
 }
 
 // ---- Event delegation ----
