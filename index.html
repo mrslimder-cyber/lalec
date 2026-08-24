@@ -51,14 +51,15 @@ body{
 /* ---------- Header ---------- */
 header.top{
   position:relative;
-  display:flex; flex-direction:column; gap:10px;
+  display:flex; flex-direction:row; align-items:stretch; justify-content:space-between; gap:30px;
   margin-bottom:30px;
-  padding:22px 24px 26px;
+  padding:24px 26px 24px;
   border:1px solid var(--border);
   background:
     repeating-linear-gradient(115deg, rgba(255,255,255,0.015) 0 2px, transparent 2px 22px),
     linear-gradient(160deg, var(--panel) 0%, var(--bg-grad) 100%);
 }
+.header-main{display:flex; flex-direction:column; gap:10px; flex:1; min-width:0; justify-content:center;}
 .eyebrow{
   display:inline-flex; align-items:center; gap:8px; width:fit-content;
   font-family:'JetBrains Mono',monospace;
@@ -81,16 +82,37 @@ h1 span{color:var(--accent);}
 .subtitle{color:var(--text-dim); font-size:14px; max-width:760px; line-height:1.55; margin-top:2px;}
 .subtitle b{color:var(--text); font-weight:600;}
 
+.header-side{
+  display:flex; flex-direction:column; align-items:flex-end; justify-content:space-between; gap:16px;
+  flex-shrink:0;
+}
 .header-credit{
-  position:absolute; top:22px; right:24px;
   display:inline-flex; align-items:center; gap:7px;
   font-family:'JetBrains Mono',monospace; font-size:11.5px; letter-spacing:1px;
   color:var(--text-faint); text-decoration:none; transition:.15s ease;
 }
 .header-credit:hover{color:var(--accent);}
 .header-credit svg{width:15px; height:15px; fill:currentColor; flex-shrink:0;}
+
+.header-stats{display:flex; gap:10px; flex-wrap:wrap; justify-content:flex-end;}
+.header-stat{
+  display:flex; flex-direction:column; justify-content:center; gap:5px;
+  min-width:96px; padding:11px 15px;
+  background:var(--panel-2); border:1px solid var(--border-soft);
+  clip-path:polygon(0 0,calc(100% - 9px) 0,100% 9px,100% 100%,9px 100%,0 calc(100% - 9px));
+}
+.header-stat .hs-label{font-family:'JetBrains Mono',monospace; font-size:9px; letter-spacing:1.2px; text-transform:uppercase; color:var(--text-faint);}
+.header-stat .hs-value{font-family:'Big Shoulders Display',sans-serif; font-size:19px; font-weight:800; color:var(--text); letter-spacing:.2px;}
+.header-stat .hs-value.hs-leader{display:flex; align-items:center; gap:7px; font-size:17px;}
+.header-stat .hs-value.hs-leader .team-logo-wrap{width:19px; height:19px;}
+
+@media (max-width:860px){
+  header.top{flex-direction:column; gap:18px;}
+  .header-side{align-items:flex-start;}
+  .header-stats{justify-content:flex-start;}
+}
 @media (max-width:560px){
-  .header-credit{position:static; margin:2px 0 -4px; justify-content:flex-end;}
+  .header-side{flex-direction:column-reverse;}
 }
 
 /* ---------- Controls bar ---------- */
@@ -343,6 +365,16 @@ tr.row-team:hover td{background:rgba(255,255,255,0.03);}
 }
 .mode-btn:hover{border-color:var(--accent); color:var(--text);}
 .mode-btn.active{background:var(--accent-dim); border-color:var(--accent); color:var(--text);}
+.sort-toggle{align-items:center; margin-top:6px;}
+.sort-toggle-label{font-family:'JetBrains Mono',monospace; font-size:10.5px; letter-spacing:.5px; text-transform:uppercase; color:var(--text-faint); margin-right:2px;}
+.sort-btn{padding:7px 13px; font-size:11px;}
+.mcur-badge{justify-content:center;}
+.exact-badge{
+  font-family:'JetBrains Mono',monospace; font-size:10px; font-weight:700; letter-spacing:.4px;
+  color:var(--accent); background:var(--accent-dim); border:1px solid rgba(34,227,160,0.35);
+  padding:4px 9px; white-space:nowrap; cursor:help;
+}
+.exact-badge.estimate{color:var(--gold); background:rgba(255,178,56,0.08); border-color:rgba(255,178,56,0.35);}
 .modal-desc{font-size:12.5px; color:var(--text-dim); line-height:1.6; margin:16px 0 18px;}
 .modal-loading{font-family:'JetBrains Mono',monospace; font-size:13px; color:var(--text-dim); padding:36px 6px; text-align:center;}
 .impact-list{display:flex; flex-direction:column; gap:11px; max-height:600px; overflow-y:auto; padding-right:6px;}
@@ -368,13 +400,18 @@ tr.row-team:hover td{background:rgba(255,255,255,0.03);}
 <div class="wrap">
 
   <header class="top">
-    <a class="header-credit" href="https://x.com/lulopezapa" target="_blank" rel="noopener noreferrer" aria-label="Creado por @lulopezapa en X">
-      <span class="header-credit-label">CREADO:</span>
-      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"></path></svg>
-    </a>
-    <div class="eyebrow">LEC · 2026 Summer Split</div>
-    <h1>Simulador de <span>Clasificación</span></h1>
-    <div class="subtitle">Calendario real de la fase regular (single round robin, Bo3, 10 equipos, 45 partidas). Las <b>28 partidas ya disputadas hasta el 16 de agosto</b> están precargadas con su resultado real; el resto puedes decidirlo tú para ver cómo queda la tabla en cada escenario. Los 6 primeros clasifican a Playoffs. Y los 4 primeros al ROADTRIP DE MKOI.</div>
+    <div class="header-main">
+      <div class="eyebrow">LEC · 2026 Summer Split</div>
+      <h1>Simulador de <span>Clasificación</span></h1>
+      <div class="subtitle">Calendario real de la fase regular (single round robin, Bo3, 10 equipos, 45 partidas). Las <b>28 partidas ya disputadas hasta el 16 de agosto</b> están precargadas con su resultado real; el resto puedes decidirlo tú para ver cómo queda la tabla en cada escenario. Los 6 primeros clasifican a Playoffs. Y los 4 primeros al ROADTRIP DE MKOI.</div>
+    </div>
+    <div class="header-side">
+      <a class="header-credit" href="https://x.com/lulopezapa" target="_blank" rel="noopener noreferrer" aria-label="Creado por @lulopezapa en X">
+        <span class="header-credit-label">CREADO:</span>
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"></path></svg>
+      </a>
+      <div class="header-stats" id="headerStats"></div>
+    </div>
   </header>
 
   <div class="controlbar">
@@ -467,7 +504,7 @@ tr.row-team:hover td{background:rgba(255,255,255,0.03);}
   </div>
 
   <footer class="note">
-    <b>Cómo funciona:</b> las partidas marcadas con la etiqueta verde <b>JUGADA</b> ya se disputaron y muestran el resultado real (fuente: Leaguepedia / cobertura oficial LEC), pero puedes pulsarlas igualmente si quieres explorar un escenario hipotético alternativo. Para las partidas futuras, pulsa sobre un equipo para marcarlo ganador (por defecto 2-0, ajustable a 2-1) y observa cómo cambia la clasificación en directo. Tus elecciones se guardan automáticamente. El bloque de <b>Simulación Monte Carlo</b> respeta todo lo que fijes a mano: si marcas, por ejemplo, que un equipo gana todos sus partidos restantes, las 100K simulaciones darán ese resultado por hecho y solo sortearán las partidas que dejes sin decidir. Usa «↺ Restablecer a resultados reales» para quitar tus condiciones antes de simular un escenario totalmente libre. Los escudos de los equipos se cargan en directo desde Leaguepedia; si alguno no carga, se muestra su abreviatura como respaldo.
+    <b>Cómo funciona:</b> las partidas marcadas con la etiqueta verde <b>JUGADA</b> ya se disputaron y muestran el resultado real (fuente: Leaguepedia / cobertura oficial LEC), pero puedes pulsarlas igualmente si quieres explorar un escenario hipotético alternativo. Para las partidas futuras, pulsa sobre un equipo para marcarlo ganador (por defecto 2-0, ajustable a 2-1) y observa cómo cambia la clasificación en directo. Tus elecciones se guardan automáticamente. Al hacer clic en un equipo de la tabla, el panel de impacto <b>no simula</b>: por cada partido pendiente enumera sus <b>4 resultados reales posibles</b> (2-0 o 2-1 para cada lado) combinados con los de todos los demás partidos pendientes, y calcula el porcentaje exacto de esas combinaciones en las que ese equipo entra en la zona elegida (marcado como «✓ EXACTO»); solo si algún día quedasen demasiadas partidas por decidir para poder enumerarlas todas se recurre a una estimación por muestreo, y se marca claramente como «≈ ESTIMADO». El bloque aparte de <b>Simulación Monte Carlo</b>, más abajo, sí sortea al azar: respeta todo lo que fijes a mano y, si marcas por ejemplo que un equipo gana todos sus partidos restantes, las 100K simulaciones darán ese resultado por hecho y solo sortearán las partidas que dejes sin decidir. Usa «↺ Restablecer a resultados reales» para quitar tus condiciones antes de simular un escenario totalmente libre. Los escudos de los equipos se cargan en directo desde Leaguepedia; si alguno no carga, se muestra su abreviatura como respaldo.
   </footer>
 </div>
 
@@ -793,81 +830,206 @@ function renderMonteCarloResults(counts, n, fixedCount){
 
 // ---- Team impact modal ----
 // Al pulsar un equipo en la clasificación, calculamos cuánto pesa cada partido
-// pendiente en sus opciones de playoffs: para cada partido sin decidir, fijamos
-// primero a un ganador y luego al otro, y en ambos casos sorteamos el resto de
-// la temporada miles de veces. La diferencia de probabilidad de playoffs (y de
-// posición media) entre ambos escenarios es el "impacto" de ese partido.
-const TEAM_IMPACT_TRIALS = 3000;
-const BASE_IMPACT_TRIALS = 12000; // simulación "base" única al cargar la página, compartida por todos los equipos
+// pendiente en sus opciones de playoffs. A diferencia del panel de Monte Carlo
+// de más abajo (que sortea al azar), aquí NO se simula: se enumeran TODAS las
+// combinaciones posibles de resultados de las partidas que quedan por decidir
+// (4^n, las 4 posibilidades reales de cada Bo3: local 2-0, local 2-1, visitante
+// 2-1, visitante 2-0) y se cuenta exactamente en cuántas de ellas el equipo
+// queda dentro de la zona elegida. Es un cálculo exhaustivo, no una estimación,
+// siempre que el número de escenarios posibles (4^partidas pendientes) no
+// supere ~260K — por eso crece mucho más rápido que si solo mirásemos quién
+// gana: con pocas partidas ya pendientes (9 o menos) se resuelve al instante.
+// Si quedan más partidas sin decidir que ese límite, se recurre a un muestreo
+// grande (10K escenarios) como respaldo, marcado como estimación.
+const MATCH_OUTCOMES = [
+  { who:'home', score:'2-0' },
+  { who:'home', score:'2-1' },
+  { who:'away', score:'2-1' },
+  { who:'away', score:'2-0' },
+];
+const EXACT_MATCH_LIMIT = 9; // 4^9 = 262.144 combinaciones por escenario: techo de lo exacto (rango 100K-300K)
+const FALLBACK_TRIALS = 10000; // solo se usa si algún día hay más de EXACT_MATCH_LIMIT partidas pendientes
+const BASE_IMPACT_TRIALS = FALLBACK_TRIALS;
 const IMPACT_MODES = {
-  playoffs: { threshold:6, label:'Entra en playoffs', short:'playoffs', zoneLabel:'Playoffs (Top 6)' },
-  roadtrip: { threshold:4, label:'Va al roadtrip',    short:'el ROADTRIP', zoneLabel:'Roadtrip (Top 4)' },
+  playoffs: { threshold:6, label:'Top 6 · Playoffs', short:'playoffs', zoneLabel:'Playoffs (Top 6)' },
+  roadtrip: { threshold:4, label:'Top 4 · Roadtrip', short:'el ROADTRIP', zoneLabel:'Roadtrip (Top 4)' },
+};
+const SORT_MODES = {
+  impacto:   { label:'🔥 Impacto' },
+  calendario:{ label:'📅 Calendario' },
 };
 let currentModalTeamId = null;
 let currentModalMode = 'playoffs';
-let impactCache = {}; // { 'teamId::mode': {current, results} } — se invalida al cambiar cualquier pick
-let baseStats = null; // { teamId: {playoffPct, roadtripPct, avgRank} } de una simulación grande hecha una sola vez
+let currentSortMode = 'impacto';
+let impactCache = {}; // { 'teamId::mode': {current, results, exact} } — se invalida al cambiar cualquier pick
+let baseStats = null; // { teamId: {playoffPct, roadtripPct, avgRank, exact, total} } calculado una sola vez
 
-// Una única simulación de BASE_IMPACT_TRIALS escenarios que calcula, de golpe,
-// la probabilidad de playoffs y de roadtrip de los 10 equipos a la vez (igual que
-// el Monte Carlo de abajo, pero más ligera). Sirve como "current" instantáneo la
-// primera vez que se abre cualquier equipo. Se invalida en cuanto cambias un pick;
-// a partir de ahí, el "current" se recalcula al vuelo con menos simulaciones (más rápido).
-function computeBaseStats(){
-  const fixedPicks = JSON.parse(JSON.stringify(picks));
+function pickForOutcome(m, outcome){
+  return { winner: outcome.who === 'home' ? m.home.id : m.away.id, score: outcome.score };
+}
+// Dado un resultado ya fijado (winner+score) para un partido, identifica a cuál
+// de los 4 índices de MATCH_OUTCOMES corresponde (para poder acumular en el
+// mismo cubo tanto al enumerar exhaustivamente como al muestrear al azar).
+function outcomeDigitFor(m, pick){
+  if(pick.winner === m.home.id) return pick.score === '2-0' ? 0 : 1;
+  return pick.score === '2-1' ? 2 : 3;
+}
+// Igual que simulateOneScenario, pero devolviendo también los picks sorteados
+// (necesarios para saber, en el muestreo de respaldo, qué resultado le tocó a
+// cada partido y así poder desglosar el impacto por partido). No sustituye a
+// simulateOneScenario: el panel de Monte Carlo de abajo sigue usando la
+// original, sin tocar.
+function simulateOneScenarioWithPicks(fixedPicks){
+  const simPicks = { ...fixedPicks };
+  ALL_MATCHES.forEach(m=>{
+    if(simPicks[m.id]) return;
+    const winner = Math.random() < 0.5 ? m.home.id : m.away.id;
+    const score = Math.random() < 0.72 ? '2-1' : '2-0';
+    simPicks[m.id] = { winner, score };
+  });
+  return { standings: computeStandingsFor(simPicks), picks: simPicks };
+}
+
+// Recorre las 4^n combinaciones (4 marcadores posibles por partido pendiente)
+// y cuenta, de golpe, la posición de TODOS los equipos en cada una.
+// Si n supera EXACT_MATCH_LIMIT, cae a un muestreo grande como aproximación.
+function exhaustiveCounts(fixedPicks){
+  const undecided = ALL_MATCHES.filter(m => !fixedPicks[m.id]);
+  const n = undecided.length;
   const counts = {};
   TEAMS.forEach(t => counts[t.id] = new Array(TEAMS.length).fill(0));
-  for(let s=0; s<BASE_IMPACT_TRIALS; s++){
-    const standings = simulateOneScenario(fixedPicks);
+  if(n > EXACT_MATCH_LIMIT){
+    for(let s=0; s<FALLBACK_TRIALS; s++){
+      const standings = simulateOneScenario(fixedPicks);
+      standings.forEach((t, idx) => { counts[t.id][idx]++; });
+    }
+    return { counts, total: FALLBACK_TRIALS, exact:false };
+  }
+  const total = Math.pow(4, n);
+  for(let mask=0; mask<total; mask++){
+    const scenarioPicks = { ...fixedPicks };
+    let rem = mask;
+    for(let i=0;i<n;i++){
+      const digit = rem % 4; rem = (rem - digit) / 4;
+      scenarioPicks[undecided[i].id] = pickForOutcome(undecided[i], MATCH_OUTCOMES[digit]);
+    }
+    const standings = computeStandingsFor(scenarioPicks);
     standings.forEach((t, idx) => { counts[t.id][idx]++; });
   }
+  return { counts, total, exact:true };
+}
+
+// ---- Cálculo de impacto por partido: UNA SOLA PASADA ----
+// Enumerar las 4 posibilidades de CADA partido candidato por separado (fijando
+// una y recalculando todo el resto desde cero) multiplicaría el trabajo por
+// ~4×(nº de partidos pendientes) — demasiado para el navegador. En vez de eso,
+// hacemos una única pasada por las 4^n combinaciones (o, si hay demasiadas
+// partidas pendientes, un único muestreo de FALLBACK_TRIALS escenarios) y, de
+// paso, para cada partido pendiente y cada uno de sus 4 resultados posibles,
+// vamos acumulando en qué proporción de esas combinaciones el equipo clasifica.
+// El resultado es exactamente el mismo que evaluar partido a partido, pero en
+// una fracción del tiempo.
+function exactImpactData(teamId, fixedPicks, threshold){
+  const undecided = ALL_MATCHES.filter(m => !fixedPicks[m.id]);
+  const n = undecided.length;
+  if(n === 0){
+    const standings = computeStandingsFor(fixedPicks);
+    const idx = standings.findIndex(t=>t.id===teamId);
+    return { current: { pct: idx<threshold?100:0, avgRank: idx+1, exact:true, total:1 }, results: [] };
+  }
+
+  const hitByMO = {}, rankByMO = {}, countByMO = {};
+  undecided.forEach(m=>{ hitByMO[m.id]=[0,0,0,0]; rankByMO[m.id]=[0,0,0,0]; countByMO[m.id]=[0,0,0,0]; });
+  let hitCount = 0, rankSum = 0, total, exact;
+
+  if(n > EXACT_MATCH_LIMIT){
+    total = FALLBACK_TRIALS; exact = false;
+    for(let s=0; s<total; s++){
+      const { standings, picks: simPicks } = simulateOneScenarioWithPicks(fixedPicks);
+      const idx = standings.findIndex(t=>t.id===teamId);
+      const hit = idx<threshold ? 1 : 0, rank = idx+1;
+      hitCount += hit; rankSum += rank;
+      for(let i=0;i<n;i++){
+        const m = undecided[i];
+        const digit = outcomeDigitFor(m, simPicks[m.id]);
+        hitByMO[m.id][digit] += hit;
+        rankByMO[m.id][digit] += rank;
+        countByMO[m.id][digit] += 1;
+      }
+    }
+  } else {
+    total = Math.pow(4, n); exact = true;
+    for(let mask=0; mask<total; mask++){
+      const scenarioPicks = { ...fixedPicks };
+      let rem = mask;
+      const digits = new Array(n);
+      for(let i=0;i<n;i++){
+        const digit = rem % 4; rem = (rem - digit) / 4;
+        digits[i] = digit;
+        scenarioPicks[undecided[i].id] = pickForOutcome(undecided[i], MATCH_OUTCOMES[digit]);
+      }
+      const standings = computeStandingsFor(scenarioPicks);
+      const idx = standings.findIndex(t=>t.id===teamId);
+      const hit = idx<threshold ? 1 : 0, rank = idx+1;
+      hitCount += hit; rankSum += rank;
+      for(let i=0;i<n;i++){
+        const m = undecided[i];
+        hitByMO[m.id][digits[i]] += hit;
+        rankByMO[m.id][digits[i]] += rank;
+        countByMO[m.id][digits[i]] += 1;
+      }
+    }
+  }
+
+  const current = { pct: hitCount/total*100, avgRank: rankSum/total, exact, total };
+  const results = undecided.map(m=>{
+    const outcomes = MATCH_OUTCOMES.map((o,digit)=>{
+      const c = countByMO[m.id][digit];
+      const pct = c>0 ? hitByMO[m.id][digit]/c*100 : current.pct;
+      const avgRank = c>0 ? rankByMO[m.id][digit]/c : current.avgRank;
+      return { who:o.who, score:o.score, metrics:{ pct, avgRank, exact, total:c } };
+    });
+    const pcts = outcomes.map(o=>o.metrics.pct);
+    const ranks = outcomes.map(o=>o.metrics.avgRank);
+    const pctSwing = Math.max(...pcts) - Math.min(...pcts);
+    const rankSwing = Math.max(...ranks) - Math.min(...ranks);
+    return { match: m, outcomes, pctSwing, rankSwing, score: pctSwing + rankSwing*18 };
+  });
+  results.sort((a,b)=> b.score - a.score);
+  return { current, results };
+}
+
+// Estadísticas "base" (probabilidad actual de playoffs/roadtrip de los 10
+// equipos) calculadas por combinatoria exacta una sola vez al cargar la
+// página o tras cada cambio de pick, para que el modal se abra al instante.
+function computeExactBaseStats(){
+  const fixedPicks = JSON.parse(JSON.stringify(picks));
+  const { counts, total, exact } = exhaustiveCounts(fixedPicks);
   const stats = {};
   TEAMS.forEach(t=>{
     const arr = counts[t.id];
-    const playoffPct = arr.slice(0,6).reduce((s,c)=>s+c,0) / BASE_IMPACT_TRIALS * 100;
-    const roadtripPct = arr.slice(0,4).reduce((s,c)=>s+c,0) / BASE_IMPACT_TRIALS * 100;
-    const avgRank = arr.reduce((sum,c,i)=> sum + c*(i+1), 0) / BASE_IMPACT_TRIALS;
-    stats[t.id] = { playoffPct, roadtripPct, avgRank };
+    const playoffPct = arr.slice(0,6).reduce((s,c)=>s+c,0) / total * 100;
+    const roadtripPct = arr.slice(0,4).reduce((s,c)=>s+c,0) / total * 100;
+    const avgRank = arr.reduce((sum,c,i)=> sum + c*(i+1), 0) / total;
+    stats[t.id] = { playoffPct, roadtripPct, avgRank, exact, total };
   });
   baseStats = stats;
 }
 function scheduleBaseStats(){
-  setTimeout(computeBaseStats, 40);
+  setTimeout(computeExactBaseStats, 40);
 }
-// Devuelve el "current" ya calculado a partir de la simulación base, o null si aún
-// no está lista / ya no es válida (para que se recalcule al vuelo como antes).
+// Devuelve el "current" ya calculado por la base exacta, o null si aún no está
+// lista / ya no es válida (se recalcula al vuelo en ese caso).
 function quickCurrentStats(teamId, threshold){
   if(!baseStats) return null;
   const b = baseStats[teamId];
-  return { pct: threshold === 6 ? b.playoffPct : b.roadtripPct, avgRank: b.avgRank };
+  return { pct: threshold === 6 ? b.playoffPct : b.roadtripPct, avgRank: b.avgRank, exact:b.exact, total:b.total };
 }
 
-function simulateTeamMetrics(teamId, fixedPicks, trials, threshold){
-  let hitCount = 0, rankSum = 0;
-  for(let i=0; i<trials; i++){
-    const standings = simulateOneScenario(fixedPicks);
-    const idx = standings.findIndex(t => t.id === teamId);
-    if(idx < threshold) hitCount++;
-    rankSum += idx + 1;
-  }
-  return { pct: hitCount / trials * 100, avgRank: rankSum / trials };
-}
-
-function computeTeamImpact(teamId, trials, threshold, precomputedCurrent){
+function computeTeamImpact(teamId, threshold){
   const baseFixed = JSON.parse(JSON.stringify(picks));
-  const current = precomputedCurrent || simulateTeamMetrics(teamId, baseFixed, trials, threshold);
-  const undecided = ALL_MATCHES.filter(m => !baseFixed[m.id]);
-  const results = undecided.map(m=>{
-    const fixedHome = { ...baseFixed, [m.id]: { winner: m.home.id, score:'2-1' } };
-    const fixedAway = { ...baseFixed, [m.id]: { winner: m.away.id, score:'2-1' } };
-    const homeMetrics = simulateTeamMetrics(teamId, fixedHome, trials, threshold);
-    const awayMetrics = simulateTeamMetrics(teamId, fixedAway, trials, threshold);
-    const pctSwing = Math.abs(homeMetrics.pct - awayMetrics.pct);
-    const rankSwing = Math.abs(homeMetrics.avgRank - awayMetrics.avgRank);
-    return { match: m, home: homeMetrics, away: awayMetrics, pctSwing, rankSwing, score: pctSwing + rankSwing*18 };
-  });
-  results.sort((a,b)=> b.score - a.score);
-  return { current, results };
+  const { current, results } = exactImpactData(teamId, baseFixed, threshold);
+  return { current, results, exact: current.exact, total: current.total };
 }
 
 function modeToggleHtml(){
@@ -880,6 +1042,16 @@ function modeToggleHtml(){
   return html;
 }
 
+function sortToggleHtml(){
+  let html = '<div class="mode-toggle sort-toggle" id="modalSortToggle"><span class="sort-toggle-label">Ordenar por:</span>';
+  Object.keys(SORT_MODES).forEach(key=>{
+    const s = SORT_MODES[key];
+    html += '<button class="mode-btn sort-btn'+(currentSortMode===key?' active':'')+'" data-sort="'+key+'">'+s.label+'</button>';
+  });
+  html += '</div>';
+  return html;
+}
+
 function teamModalHeaderHtml(teamId, current){
   const team = TEAM_MAP[teamId];
   const standings = computeStandings();
@@ -887,7 +1059,12 @@ function teamModalHeaderHtml(teamId, current){
   const t = standings[idx];
   const mode = IMPACT_MODES[currentModalMode];
   const pctColor = currentModalMode === 'roadtrip' ? 'var(--violet)' : 'var(--accent)';
-  const pctDisplay = current ? current.pct.toFixed(0)+'%' : '…';
+  const pctDisplay = current ? current.pct.toFixed(1)+'%' : '…';
+  const exactBadge = current
+    ? (current.exact
+        ? '<span class="exact-badge" title="Calculado sobre las '+current.total.toLocaleString('es-ES')+' combinaciones posibles de las partidas pendientes">✓ EXACTO · '+current.total.toLocaleString('es-ES')+' combinaciones</span>'
+        : '<span class="exact-badge estimate" title="Demasiadas combinaciones para calcularlas todas: estimado con '+current.total.toLocaleString('es-ES')+' escenarios al azar">≈ ESTIMADO · '+current.total.toLocaleString('es-ES')+' muestras</span>')
+    : '';
   return '<div class="modal-team-header">'+teamLogoHtml(team,44)
     + '<div><div class="modal-team-title">'+team.name+'</div>'
     +   '<div class="modal-team-sub">Partidos más impactantes para sus opciones de '+mode.zoneLabel+'</div></div></div>'
@@ -896,75 +1073,84 @@ function teamModalHeaderHtml(teamId, current){
     +   '<div class="mcur-item"><span class="mcur-label">V-D</span><span class="mcur-value">'+t.w+'-'+t.l+'</span></div>'
     +   '<div class="mcur-item"><span class="mcur-label">Dif. mapas</span><span class="mcur-value">'+(t.diff>0?'+':'')+t.diff+'</span></div>'
     +   '<div class="mcur-item"><span class="mcur-label">Prob. actual '+mode.zoneLabel+'</span><span class="mcur-value" style="color:'+pctColor+'">'+pctDisplay+'</span></div>'
+    +   (exactBadge ? '<div class="mcur-item mcur-badge">'+exactBadge+'</div>' : '')
     + '</div>'
-    + modeToggleHtml();
+    + modeToggleHtml()
+    + sortToggleHtml();
 }
 
 function renderTeamModalLoading(teamId, quickCurrent){
   const mode = IMPACT_MODES[currentModalMode];
+  const undecidedN = ALL_MATCHES.filter(m => !picks[m.id]).length;
+  const combos = undecidedN <= EXACT_MATCH_LIMIT ? Math.pow(4, undecidedN) : FALLBACK_TRIALS;
+  const verb = undecidedN <= EXACT_MATCH_LIMIT
+    ? 'Calculando las '+combos.toLocaleString('es-ES')+' combinaciones exactas posibles'
+    : 'Estimando con '+combos.toLocaleString('es-ES')+' escenarios de muestra (hay demasiadas partidas pendientes para enumerarlas todas)';
   document.getElementById('teamImpactContent').innerHTML = teamModalHeaderHtml(teamId, quickCurrent)
-    + '<div class="modal-desc">Calculando qué partidos pendientes pesan más en sus opciones de '+mode.zoneLabel+', simulando miles de escenarios para cada resultado posible...</div>'
-    + '<div class="modal-loading">⏳ Simulando '+TEAM_IMPACT_TRIALS.toLocaleString('es-ES')+' escenarios por partido...</div>';
+    + '<div class="modal-desc">Calculando qué partidos pendientes pesan más en sus opciones de '+mode.zoneLabel+'...</div>'
+    + '<div class="modal-loading">⏳ '+verb+' para cada resultado posible...</div>';
 }
 
-// Fila para un partido de OTRO equipo: se muestran las dos opciones (gana local / gana visitante)
+// Fila para un partido de OTRO equipo: se muestran las 4 posibilidades reales
+// del Bo3 (local 2-0, local 2-1, visitante 2-1, visitante 2-0)
 function impactRowHtml(item){
   const m = item.match;
   const mode = IMPACT_MODES[currentModalMode];
-  const barHome = Math.max(item.home.pct, 2);
-  const barAway = Math.max(item.away.pct, 2);
+  const scenarios = item.outcomes.map(o=>{
+    const team = o.who === 'home' ? m.home : m.away;
+    const winnerId = team.id;
+    const bar = Math.max(o.metrics.pct, 2);
+    return '<div class="impact-scenario" data-match="'+m.id+'" data-winner="'+winnerId+'" data-score="'+o.score+'" title="Haz clic para fijar este resultado"><span class="isc-label">'+teamLogoHtml(team,16)+team.short+' '+o.score+'</span>'
+      + '<div class="impact-bar-track"><div class="impact-bar-fill" style="width:'+bar+'%"></div></div>'
+      + '<span class="isc-pct">'+o.metrics.pct.toFixed(0)+'%</span>'
+      + '<span class="isc-rank">pos. '+o.metrics.avgRank.toFixed(1)+'</span>'
+      + '</div>';
+  }).join('');
   return '<div class="impact-row">'
     + '<div class="impact-row-head">'
     +   '<div class="impact-match">'+teamLogoHtml(m.home,18)+m.home.short+'<span class="vs-sep">vs</span>'+teamLogoHtml(m.away,18)+m.away.short+'</div>'
     +   '<div class="impact-meta">'+m.date+'</div>'
     + '</div>'
-    + '<div class="impact-scenarios">'
-    +   '<div class="impact-scenario" data-match="'+m.id+'" data-winner="'+m.home.id+'" title="Haz clic para fijar este resultado"><span class="isc-label">'+teamLogoHtml(m.home,16)+'Si gana '+m.home.short+'</span>'
-    +     '<div class="impact-bar-track"><div class="impact-bar-fill" style="width:'+barHome+'%"></div></div>'
-    +     '<span class="isc-pct">'+item.home.pct.toFixed(0)+'%</span>'
-    +     '<span class="isc-rank">pos. '+item.home.avgRank.toFixed(1)+'</span>'
-    +   '</div>'
-    +   '<div class="impact-scenario" data-match="'+m.id+'" data-winner="'+m.away.id+'" title="Haz clic para fijar este resultado"><span class="isc-label">'+teamLogoHtml(m.away,16)+'Si gana '+m.away.short+'</span>'
-    +     '<div class="impact-bar-track"><div class="impact-bar-fill" style="width:'+barAway+'%"></div></div>'
-    +     '<span class="isc-pct">'+item.away.pct.toFixed(0)+'%</span>'
-    +     '<span class="isc-rank">pos. '+item.away.avgRank.toFixed(1)+'</span>'
-    +   '</div>'
-    + '</div>'
-    + '<div class="impact-swing">↕ '+item.pctSwing.toFixed(0)+' pp de diferencia en probabilidad de '+mode.short
+    + '<div class="impact-scenarios">'+scenarios+'</div>'
+    + '<div class="impact-swing">↕ '+item.pctSwing.toFixed(0)+' pp entre el mejor y el peor resultado en probabilidad de '+mode.short
     +   (item.rankSwing >= 0.3 ? ' · '+item.rankSwing.toFixed(1)+' posiciones de media' : '') + '</div>'
     + '</div>';
 }
 
-// Fila para un partido DEL PROPIO equipo: se muestra en términos de "si gana / si pierde"
+// Fila para un partido DEL PROPIO equipo: se muestran las 4 posibilidades
+// reales del Bo3 en términos de "gana 2-0 / gana 2-1 / pierde 1-2 / pierde 0-2"
 function ownMatchRowHtml(item, teamId){
   const m = item.match;
   const mode = IMPACT_MODES[currentModalMode];
   const isHome = m.home.id === teamId;
   const opponent = isHome ? m.away : m.home;
-  const winMetrics = isHome ? item.home : item.away;
-  const loseMetrics = isHome ? item.away : item.home;
-  const barWin = Math.max(winMetrics.pct, 2);
-  const barLose = Math.max(loseMetrics.pct, 2);
+  const scenarios = item.outcomes.map(o=>{
+    const winnerId = o.who === 'home' ? m.home.id : m.away.id;
+    const teamWins = winnerId === teamId;
+    const scoreLabel = teamWins ? o.score : (o.score === '2-0' ? '0-2' : '1-2');
+    const icon = teamWins ? '✅' : '❌';
+    const bar = Math.max(o.metrics.pct, 2);
+    return '<div class="impact-scenario" data-match="'+m.id+'" data-winner="'+winnerId+'" data-score="'+o.score+'" title="Haz clic para fijar este resultado"><span class="isc-label">'+icon+' '+scoreLabel+'</span>'
+      + '<div class="impact-bar-track"><div class="impact-bar-fill" style="width:'+bar+'%"></div></div>'
+      + '<span class="isc-pct">'+o.metrics.pct.toFixed(0)+'%</span>'
+      + '<span class="isc-rank">pos. '+o.metrics.avgRank.toFixed(1)+'</span>'
+      + '</div>';
+  }).join('');
   return '<div class="impact-row">'
     + '<div class="impact-row-head">'
     +   '<div class="impact-match">vs '+teamLogoHtml(opponent,18)+opponent.short+'</div>'
     +   '<div class="impact-meta">'+m.date+'</div>'
     + '</div>'
-    + '<div class="impact-scenarios">'
-    +   '<div class="impact-scenario" data-match="'+m.id+'" data-winner="'+teamId+'" title="Haz clic para fijar este resultado"><span class="isc-label">✅ Si gana</span>'
-    +     '<div class="impact-bar-track"><div class="impact-bar-fill" style="width:'+barWin+'%"></div></div>'
-    +     '<span class="isc-pct">'+winMetrics.pct.toFixed(0)+'%</span>'
-    +     '<span class="isc-rank">pos. '+winMetrics.avgRank.toFixed(1)+'</span>'
-    +   '</div>'
-    +   '<div class="impact-scenario" data-match="'+m.id+'" data-winner="'+opponent.id+'" title="Haz clic para fijar este resultado"><span class="isc-label">❌ Si pierde</span>'
-    +     '<div class="impact-bar-track"><div class="impact-bar-fill" style="width:'+barLose+'%"></div></div>'
-    +     '<span class="isc-pct">'+loseMetrics.pct.toFixed(0)+'%</span>'
-    +     '<span class="isc-rank">pos. '+loseMetrics.avgRank.toFixed(1)+'</span>'
-    +   '</div>'
-    + '</div>'
-    + '<div class="impact-swing">↕ '+item.pctSwing.toFixed(0)+' pp de diferencia en probabilidad de '+mode.short
+    + '<div class="impact-scenarios">'+scenarios+'</div>'
+    + '<div class="impact-swing">↕ '+item.pctSwing.toFixed(0)+' pp entre el mejor y el peor resultado en probabilidad de '+mode.short
     +   (item.rankSwing >= 0.3 ? ' · '+item.rankSwing.toFixed(1)+' posiciones de media' : '') + '</div>'
     + '</div>';
+}
+
+function sortComparator(a, b){
+  return currentSortMode === 'calendario'
+    ? MATCH_ORDER[a.match.id] - MATCH_ORDER[b.match.id]
+    : b.score - a.score;
 }
 
 function renderTeamModalResults(teamId, current, results){
@@ -974,14 +1160,17 @@ function renderTeamModalResults(teamId, current, results){
   } else {
     const ownMatches = results
       .filter(r => r.match.home.id === teamId || r.match.away.id === teamId)
-      .sort((a,b)=> MATCH_ORDER[a.match.id] - MATCH_ORDER[b.match.id]);
+      .sort(sortComparator);
     const otherMatches = results
       .filter(r => r.match.home.id !== teamId && r.match.away.id !== teamId)
-      .sort((a,b)=> b.score - a.score)
+      .sort(sortComparator)
       .slice(0, 8);
 
     const mode = IMPACT_MODES[currentModalMode];
-    body = '<div class="modal-desc">A la izquierda, sus partidos pendientes, del más próximo al más lejano, con cómo cambian sus opciones de <b>'+mode.zoneLabel+'</b> según gane o pierda. A la derecha, los partidos de otros equipos que más pesan en esa clasificación ('+TEAM_IMPACT_TRIALS.toLocaleString('es-ES')+' simulaciones por escenario; el resto de la temporada se sortea al azar en ambos casos). <b>Haz clic en cualquier resultado para fijarlo</b> y ver cómo se recalculan el resto de porcentajes al momento.</div>'
+    const methodNote = current.exact
+      ? 'Se han enumerado <b>todas las '+current.total.toLocaleString('es-ES')+' combinaciones posibles</b> de resultados para las partidas pendientes (cálculo exacto, no una simulación).'
+      : 'Hay demasiadas partidas pendientes para enumerarlas todas: se ha usado una estimación con '+current.total.toLocaleString('es-ES')+' escenarios de muestra.';
+    body = '<div class="modal-desc">A la izquierda, sus partidos pendientes; a la derecha, los partidos de otros equipos que más pesan en su clasificación. Para cada partido se muestran <b>las 4 posibilidades reales de un Bo3</b> (2-0 o 2-1 para cada lado) y cómo cambia cada una sus opciones de <b>'+mode.zoneLabel+'</b>. '+methodNote+' <b>Haz clic en cualquier resultado para fijarlo</b> y ver cómo se recalcula el resto al momento.</div>'
       + '<div class="impact-columns">'
       +   '<div class="impact-col">'
       +     '<div class="impact-col-title"><span class="dot"></span>Sus próximos partidos</div>'
@@ -1015,7 +1204,7 @@ function openTeamImpactModal(teamId, mode){
   const quickCurrent = quickCurrentStats(teamId, threshold); // instantáneo si la simulación base ya está lista
   renderTeamModalLoading(teamId, quickCurrent);
   setTimeout(()=>{
-    const { current, results } = computeTeamImpact(teamId, TEAM_IMPACT_TRIALS, threshold, quickCurrent);
+    const { current, results } = computeTeamImpact(teamId, threshold);
     impactCache[cacheKey] = { current, results };
     renderTeamModalResults(teamId, current, results);
   }, 30);
@@ -1023,12 +1212,13 @@ function openTeamImpactModal(teamId, mode){
 
 // Fija (o quita, si ya estaba fijado ese mismo ganador) el resultado de un partido
 // desde el propio desplegable, y refresca tabla, partidos y el desplegable al momento.
-function applyModalPick(matchId, winnerId){
+function applyModalPick(matchId, winnerId, score){
   prevRanks = ranksMap(computeStandings());
-  if(picks[matchId] && picks[matchId].winner === winnerId){
+  const chosenScore = score || '2-1';
+  if(picks[matchId] && picks[matchId].winner === winnerId && picks[matchId].score === chosenScore){
     delete picks[matchId];
   } else {
-    picks[matchId] = { winner: winnerId, score: '2-1' };
+    picks[matchId] = { winner: winnerId, score: chosenScore };
   }
   savePicks();
   renderAll();
@@ -1115,6 +1305,20 @@ function renderProgress(){
   const done = Object.keys(picks).length;
   document.getElementById('progressLabel').textContent = done + ' / ' + TOTAL_MATCHES + ' partidas decididas';
   document.getElementById('progressFill').style.width = (done / TOTAL_MATCHES * 100) + '%';
+}
+
+function renderHeaderStats(){
+  const standings = computeStandings();
+  const leader = standings[0];
+  const playedCount = ALL_MATCHES.filter(m => picks[m.id]).length;
+  const remaining = TOTAL_MATCHES - playedCount;
+  const jornada = SCHEDULE[activeRound] ? SCHEDULE[activeRound].label : '—';
+  const html =
+      '<div class="header-stat"><span class="hs-label">Jornada actual</span><span class="hs-value">'+jornada+'</span></div>'
+    + '<div class="header-stat"><span class="hs-label">Partidas</span><span class="hs-value">'+playedCount+' / '+TOTAL_MATCHES+'</span></div>'
+    + '<div class="header-stat"><span class="hs-label">Líder</span><span class="hs-value hs-leader">'+(leader ? teamLogoHtml(leader,19)+leader.short : '—')+'</span></div>'
+    + '<div class="header-stat"><span class="hs-label">Por decidir</span><span class="hs-value">'+remaining+'</span></div>';
+  document.getElementById('headerStats').innerHTML = html;
 }
 
 function renderStandings(){
@@ -1204,6 +1408,7 @@ function scoreRowHtml(matchId, score){
 
 function renderAll(){
   renderProgress();
+  renderHeaderStats();
   renderStandings();
   renderTabs();
   renderMatches();
@@ -1238,6 +1443,17 @@ document.getElementById('standingsBody').addEventListener('click', (e)=>{
   openTeamImpactModal(row.dataset.team, 'playoffs');
 });
 document.getElementById('teamImpactContent').addEventListener('click', (e)=>{
+  const sortBtn = e.target.closest('.sort-btn');
+  if(sortBtn && currentModalTeamId){
+    const sort = sortBtn.dataset.sort;
+    if(sort !== currentSortMode){
+      currentSortMode = sort;
+      const cacheKey = currentModalTeamId+'::'+currentModalMode;
+      const cached = impactCache[cacheKey];
+      if(cached) renderTeamModalResults(currentModalTeamId, cached.current, cached.results);
+    }
+    return;
+  }
   const modeBtn = e.target.closest('.mode-btn');
   if(modeBtn && currentModalTeamId){
     const mode = modeBtn.dataset.mode;
@@ -1246,7 +1462,7 @@ document.getElementById('teamImpactContent').addEventListener('click', (e)=>{
   }
   const scenario = e.target.closest('.impact-scenario[data-match]');
   if(scenario){
-    applyModalPick(scenario.dataset.match, scenario.dataset.winner);
+    applyModalPick(scenario.dataset.match, scenario.dataset.winner, scenario.dataset.score);
   }
 });
 document.getElementById('impactBackBtn').addEventListener('click', closeTeamModal);
@@ -1262,7 +1478,7 @@ function triggerMonteCarlo(isAuto){
   document.getElementById('mcStatus').textContent = (isAuto ? 'Cargando automáticamente · ' : 'Calculando con ')
     + lockedNow + ' partidas fijadas... esto tarda un instante.';
   setTimeout(()=>{
-    runMonteCarlo(300000);
+    runMonteCarlo(100000);
     btn.disabled = false;
     btn.textContent = '🔁 Repetir 100K simulaciones';
   }, 30);
