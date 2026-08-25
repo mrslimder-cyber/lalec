@@ -407,8 +407,7 @@ tr.row-team:hover td{background:rgba(255,255,255,0.03);}
 .bracket-upper{align-items:center;}
 .bracket-lower{align-items:center; margin-top:0;}
 .bracket-divider{border-top:1px dashed var(--border); margin:30px 6px; opacity:.7;}
-.bc-r2{margin-top:-20px;} /* Upper Round 2 un punto más arriba que el centro exacto */
-.bc-final{align-self:flex-start;} /* la Split Final sube y deja hueco debajo (antes ocupado por Lower Round 3) */
+.bc-r2, .bc-final{margin-top:-20px;} /* Upper Round 2 y Split Final centradas juntas, un punto por encima del centro exacto */
 @media (max-width:1000px){.bracket-upper, .bracket-lower{grid-template-columns:1fr 1fr;}}
 @media (max-width:620px){.bracket-upper, .bracket-lower{grid-template-columns:1fr;}}
 .bcol{display:flex; flex-direction:column;}
@@ -430,6 +429,21 @@ tr.row-team:hover td{background:rgba(255,255,255,0.03);}
 .choice-opt:hover{border-color:var(--gold);}
 .choice-opt.chosen{background:rgba(255,178,56,0.1); border-color:var(--gold);}
 .choice-opt .tp-name{font-size:12px;}
+/* Split Final: tarjeta destacada */
+.match-card-final{
+  border:1.5px solid var(--gold); padding:18px;
+  background:
+    radial-gradient(ellipse 260px 140px at 50% 0%, rgba(255,178,56,0.12), transparent 70%),
+    var(--panel-2);
+  box-shadow:0 0 0 1px rgba(255,178,56,0.08), 0 12px 30px -10px rgba(255,178,56,0.18);
+}
+.match-card-final .mtag{color:var(--gold) !important; font-size:11px !important; letter-spacing:1.5px !important; text-align:center; margin-bottom:12px !important;}
+.match-card-final .team-pick{padding:13px 14px !important; border-color:var(--border);}
+.match-card-final .team-pick.winner{border-color:var(--gold) !important; background:rgba(255,178,56,0.09) !important; box-shadow:0 0 0 1px rgba(255,178,56,0.25) inset;}
+.match-card-final .team-pick .tp-check{color:var(--gold) !important;}
+.match-card-final .tp-name{font-size:17px !important;}
+.match-card-final .vs-label{color:var(--gold); font-size:10.5px; letter-spacing:3px; margin:4px 0 !important;}
+.bcol-label.final{font-size:15px !important; letter-spacing:2px !important;}
 /* conector visual tipo bracket "]" uniendo cada pareja de partidos con la ronda siguiente */
 .bpair{position:relative; display:flex; flex-direction:column; gap:20px; padding-right:16px; margin-bottom:8px;}
 .bpair::after{
@@ -1525,8 +1539,8 @@ function pfSlotRow(mkey, team, winnerId){
   return '<div class="team-pick '+(isWinner?'winner':'')+(winnerId && !isWinner?' loser':'')+'" data-mkey="'+mkey+'" data-team="'+team.id+'">'
     + teamLogoHtml(team,22) + '<div class="tp-name">'+team.name+'</div><div class="tp-check">✓</div></div>';
 }
-function pfMatchCard(mkey, home, away, winnerId, tag){
-  let html = '<div class="match-card'+(!home && !away?' pending':'')+'">';
+function pfMatchCard(mkey, home, away, winnerId, tag, variant){
+  let html = '<div class="match-card'+(!home && !away?' pending':'')+(variant==='final'?' match-card-final':'')+'">';
   if(tag) html += '<span class="mtag">'+tag+'</span>';
   html += pfSlotRow(mkey, home, winnerId);
   html += '<div class="vs-label">VS</div>';
@@ -1613,7 +1627,7 @@ function renderPlayoffBracket(){
   const m8Home = w5 ? TEAM_MAP[w5] : null, m8Away = w7 ? TEAM_MAP[w7] : null;
   pfValidateWinner('m8', m8Home, m8Away);
   const w8 = bracketPicks.m8 && bracketPicks.m8.winner;
-  const m8Html = pfMatchCard('m8', m8Home, m8Away, w8, 'Split Final');
+  const m8Html = pfMatchCard('m8', m8Home, m8Away, w8, '🏆 GRAN FINAL', 'final');
 
   grid.innerHTML =
       '<div class="bracket-upper">'
