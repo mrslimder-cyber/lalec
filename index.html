@@ -403,21 +403,25 @@ tr.row-team:hover td{background:rgba(255,255,255,0.03);}
 .seed-chip .snum{font-family:'JetBrains Mono',monospace; font-weight:700; font-size:12px; color:var(--text-faint); width:16px; text-align:center;}
 .seed-chip .sname{font-size:12.5px; font-weight:600;}
 .seed-note{font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--text-faint); margin-top:12px; line-height:1.6;}
-.bracket{display:grid; grid-template-columns:1.15fr 1fr 1fr 1fr; gap:26px; align-items:stretch; margin-top:20px;}
-@media (max-width:1000px){.bracket{grid-template-columns:1fr 1fr;}}
-@media (max-width:620px){.bracket{grid-template-columns:1fr;}}
+.bracket-upper, .bracket-lower{display:grid; grid-template-columns:1.15fr 1fr 1fr 1fr; gap:26px; align-items:center; margin-top:20px;}
+.bracket-upper{align-items:center;}
+.bracket-lower{align-items:center; margin-top:0;}
+.bracket-divider{border-top:1px dashed var(--border); margin:30px 6px; opacity:.7;}
+.bc-r2{margin-top:-20px;} /* Upper Round 2 un punto más arriba que el centro exacto */
+.bc-final{align-self:flex-start;} /* la Split Final sube y deja hueco debajo (antes ocupado por Lower Round 3) */
+@media (max-width:1000px){.bracket-upper, .bracket-lower{grid-template-columns:1fr 1fr;}}
+@media (max-width:620px){.bracket-upper, .bracket-lower{grid-template-columns:1fr;}}
 .bcol{display:flex; flex-direction:column;}
-.bcol-mid{justify-content:center; gap:34px;}
 .bcol-label{font-family:'Big Shoulders Display',sans-serif; font-size:13px; font-weight:700; letter-spacing:1.5px; text-transform:uppercase; color:var(--text-faint); padding-bottom:7px; border-bottom:1px dashed var(--border); margin-bottom:12px;}
 .bcol-label.upper{color:var(--accent);}
 .bcol-label.lower{color:var(--violet);}
 .bcol-label.final{color:var(--gold);}
-.bracket .match-card{margin-bottom:0;}
-.bracket .match-card.pending{opacity:.45;}
-.bracket .match-card .mtag{font-size:9.5px; letter-spacing:1px; color:var(--text-faint); font-family:'JetBrains Mono',monospace; text-transform:uppercase; margin-bottom:8px; display:block;}
-.bracket .team-pick{padding:9px 11px; margin-bottom:6px;}
-.bracket .team-pick .tp-name{font-family:'Big Shoulders Display',sans-serif; font-size:14.5px; font-weight:700; letter-spacing:.3px; text-transform:uppercase;}
-.bracket .team-pick.locked{cursor:default;}
+.bracket-upper .match-card, .bracket-lower .match-card{margin-bottom:0;}
+.bracket-upper .match-card.pending, .bracket-lower .match-card.pending{opacity:.45;}
+.bracket-upper .match-card .mtag, .bracket-lower .match-card .mtag{font-size:9.5px; letter-spacing:1px; color:var(--text-faint); font-family:'JetBrains Mono',monospace; text-transform:uppercase; margin-bottom:8px; display:block;}
+.bracket-upper .team-pick, .bracket-lower .team-pick{padding:9px 11px; margin-bottom:6px;}
+.bracket-upper .team-pick .tp-name, .bracket-lower .team-pick .tp-name{font-family:'Big Shoulders Display',sans-serif; font-size:14.5px; font-weight:700; letter-spacing:.3px; text-transform:uppercase;}
+.bracket-upper .team-pick.locked, .bracket-lower .team-pick.locked{cursor:default;}
 .placeholder-slot{display:flex; align-items:center; gap:9px; padding:8px 10px; border:1px dashed var(--border); color:var(--text-faint); font-size:11.5px; font-family:'JetBrains Mono',monospace; margin-bottom:6px;}
 .choice-card{background:var(--panel); border:1px solid var(--gold); padding:14px; margin-bottom:18px;}
 .choice-card .ctitle{font-family:'Big Shoulders Display',sans-serif; font-size:15px; font-weight:700; color:var(--gold); margin-bottom:9px; text-transform:uppercase; letter-spacing:.3px;}
@@ -504,7 +508,6 @@ tr.row-team:hover td{background:rgba(255,255,255,0.03);}
       <div class="tiebreak-note">→ % de mapas ganados en el enfrentamiento directo</div>
       <div class="tiebreak-note">→ <b>Strength of Victory</b> por victorias</div>
       <div class="tiebreak-note">→ SoV por mapas ganados</div>
-      <div class="tiebreak-note" style="padding-bottom:14px;">→ clasificación de Spring Split (no modelada en este simulador; se resuelve alfabéticamente si llega a este punto).</div>
     </div>
 
     <!-- MATCHES / TEAM IMPACT (se alternan en el mismo hueco) -->
@@ -561,7 +564,17 @@ tr.row-team:hover td{background:rgba(255,255,255,0.03);}
       <div class="bracket" id="pfBracketGrid"></div>
 
       <button class="action danger pf-resetbtn" id="pfResetBtn">↺ Borrar mi predicción de playoffs</button>
-      
+
+      <div class="panel-title" style="margin-top:24px;"><span class="dot" style="background:var(--gold);"></span>Sistema de puntos <span class="soon-badge" style="margin-left:6px;">Ranking próximamente</span></div>
+      <div class="points-grid">
+        <div class="points-row"><span>Acertar la elección del 1er seed</span><b>+1</b></div>
+        <div class="points-row"><span>Ganador Upper/Lower Ronda 1</span><b>+1 c/u</b></div>
+        <div class="points-row"><span>Ganador Upper/Lower Ronda 2</span><b>+2 c/u</b></div>
+        <div class="points-row"><span>Ganador Lower Ronda 3</span><b>+3</b></div>
+        <div class="points-row"><span>Los 3 clasificados a Worlds</span><b>+2</b></div>
+        <div class="points-row"><span>Campeón de la Split Final</span><b>+5</b></div>
+      </div>
+      <div class="seed-note" style="margin-top:14px;">Tu predicción de playoffs se guarda en este navegador, aparte de tus elecciones de la fase regular. El 1º y 2º seed pasan directos al Upper Bracket; el 1er seed elige a cuál de los dos, 3º o 4º, enfrentar en el Upper Round 1, y al no elegido le toca el 2º seed. El 5º y 6º empiezan en el Lower Bracket. Quien pierda en el Upper Round 1 cae al Lower Bracket, pero el seeding importa: de los dos perdedores, el de mejor seed juega contra el 6º (rival más asequible) y el de peor seed contra el 5º. El resto es eliminación directa hasta la Split Final: los dos finalistas más el eliminado en la Lower Round 3 forman el top 3 que clasifica a Worlds. El ranking global entre usuarios llegará más adelante.</div>
     </div>
   </div>
 </div>
@@ -1487,40 +1500,39 @@ async function saveBracketPicks(){
     }
   }catch(e){ console.error('No se pudo guardar la predicción de playoffs', e); }
 }
-// Grafo real de dependencias: qué casillas hay que borrar cuando cambia cada una.
-// m1 y m2 son independientes entre sí (los dos solo dependen de "choice"), igual
-// que m3/m4 entre sí y m5/m6 entre sí — así elegir el partido 2 y luego el 1
-// (o el 4 y luego el 3) ya no borra el que habías fijado antes.
-const BRACKET_DEPENDENTS = {
-  choice: ['m1','m2','m3','m4','m5','m6','m7','m8'],
-  m1: ['m3','m4','m5','m6','m7','m8'],
-  m2: ['m3','m4','m5','m6','m7','m8'],
-  m3: ['m6','m7','m8'],
-  m4: ['m6','m7','m8'],
-  m5: ['m7','m8'],
-  m6: ['m7','m8'],
-  m7: ['m8'],
-  m8: []
-};
-function clearBracketDownstream(fromKey){
-  (BRACKET_DEPENDENTS[fromKey] || []).forEach(k=>{ delete bracketPicks[k]; });
+
+// Un partido puede tener solo un equipo conocido (el otro aún "pendiente").
+// Si el pick guardado ya no corresponde a ninguno de los equipos actuales del
+// partido (porque cambió algo aguas arriba), se borra solo; si sigue siendo
+// válido se mantiene, aunque el otro equipo todavía esté pendiente — así puedes
+// marcar ganador a un equipo "que sabes que gana sí o sí" sin esperar a saber
+// contra quién juega.
+function pfValidateWinner(mkey, home, away){
+  const cur = bracketPicks[mkey] && bracketPicks[mkey].winner;
+  if(!cur) return;
+  if(home && away){
+    if(home.id !== cur && away.id !== cur) delete bracketPicks[mkey];
+  } else if(home || away){
+    if((home||away).id !== cur) delete bracketPicks[mkey];
+  } else {
+    delete bracketPicks[mkey];
+  }
 }
 
-function pfTeamRow(mkey, team, isWinner, isLoser){
-  return '<div class="team-pick '+(isWinner?'winner':'')+(isLoser?' loser':'')+'" data-mkey="'+mkey+'" data-team="'+team.id+'">'
+function pfSlotRow(mkey, team, winnerId){
+  if(!team) return '<div class="placeholder-slot">⏳ Pendiente</div>';
+  const isWinner = winnerId === team.id;
+  return '<div class="team-pick '+(isWinner?'winner':'')+(winnerId && !isWinner?' loser':'')+'" data-mkey="'+mkey+'" data-team="'+team.id+'">'
     + teamLogoHtml(team,22) + '<div class="tp-name">'+team.name+'</div><div class="tp-check">✓</div></div>';
 }
 function pfMatchCard(mkey, home, away, winnerId, tag){
-  let html = '<div class="match-card">';
+  let html = '<div class="match-card'+(!home && !away?' pending':'')+'">';
   if(tag) html += '<span class="mtag">'+tag+'</span>';
-  html += pfTeamRow(mkey, home, winnerId===home.id, winnerId && winnerId!==home.id);
+  html += pfSlotRow(mkey, home, winnerId);
   html += '<div class="vs-label">VS</div>';
-  html += pfTeamRow(mkey, away, winnerId===away.id, winnerId && winnerId!==away.id);
+  html += pfSlotRow(mkey, away, winnerId);
   html += '</div>';
   return html;
-}
-function pfPending(tag, placeholderText){
-  return '<div class="match-card pending"><span class="mtag">'+tag+'</span><div class="placeholder-slot">'+placeholderText+'</div></div>';
 }
 function pfChoiceOpt(team){
   const chosen = bracketPicks.choice === team.id ? ' chosen' : '';
@@ -1547,68 +1559,76 @@ function renderPlayoffBracket(){
     + '<div class="choice-opts">'+pfChoiceOpt(seed3)+pfChoiceOpt(seed4)+'</div></div>';
 
   const chosenId = bracketPicks.choice;
-  const notChosen = chosenId === seed3.id ? seed4 : (chosenId === seed4.id ? seed3 : null);
+  const chosenTeam = chosenId ? TEAM_MAP[chosenId] : null;
+  const notChosenTeam = chosenId ? (chosenId === seed3.id ? seed4 : seed3) : null;
 
-  let m1Html, m2Html;
-  if(chosenId){
-    m1Html = pfMatchCard('m1', seed1, TEAM_MAP[chosenId], bracketPicks.m1 && bracketPicks.m1.winner, 'Upper Round 1 · Partido 1');
-    m2Html = pfMatchCard('m2', seed2, notChosen, bracketPicks.m2 && bracketPicks.m2.winner, 'Upper Round 1 · Partido 2');
-  } else {
-    m1Html = pfPending('Upper Round 1 · Partido 1', seed1.short+' vs (elección pendiente)');
-    m2Html = pfPending('Upper Round 1 · Partido 2', seed2.short+' vs (elección pendiente)');
-  }
+  // Upper Round 1 — el titular (seed1/seed2) ya se conoce siempre; el rival
+  // solo cuando se hace la elección. Se puede marcar ganador al titular antes.
+  pfValidateWinner('m1', seed1, chosenTeam);
+  pfValidateWinner('m2', seed2, notChosenTeam);
+  const w1 = bracketPicks.m1 && bracketPicks.m1.winner;
+  const w2 = bracketPicks.m2 && bracketPicks.m2.winner;
+  const m1Html = pfMatchCard('m1', seed1, chosenTeam, w1, 'Upper Round 1 · Partido 1');
+  const m2Html = pfMatchCard('m2', seed2, notChosenTeam, w2, 'Upper Round 1 · Partido 2');
 
-  const w1 = bracketPicks.m1 && bracketPicks.m1.winner, w2 = bracketPicks.m2 && bracketPicks.m2.winner;
+  // Lower Round 1 — necesita los DOS perdedores del Upper R1 para decidir el
+  // emparejamiento por seed, pero el titular (seed5/seed6) ya se puede marcar.
   let loser1=null, loser2=null;
-  if(chosenId && w1) loser1 = w1 === seed1.id ? TEAM_MAP[chosenId] : seed1;
-  if(chosenId && w2) loser2 = w2 === seed2.id ? notChosen : seed2;
-
-  let m3Html, m4Html;
+  if(w1 && chosenTeam) loser1 = w1 === seed1.id ? chosenTeam : seed1;
+  if(w2 && notChosenTeam) loser2 = w2 === seed2.id ? notChosenTeam : seed2;
+  let m3Away=null, m4Away=null;
   if(loser1 && loser2){
     const idx1 = seeds.findIndex(t=>t.id===loser1.id), idx2 = seeds.findIndex(t=>t.id===loser2.id);
-    const betterLoser = idx1 < idx2 ? loser1 : loser2;
-    const worseLoser = idx1 < idx2 ? loser2 : loser1;
-    m4Html = pfMatchCard('m4', seed6, betterLoser, bracketPicks.m4 && bracketPicks.m4.winner, 'Lower Round 1 · vs 6º (mejor seed perdedor)');
-    m3Html = pfMatchCard('m3', seed5, worseLoser, bracketPicks.m3 && bracketPicks.m3.winner, 'Lower Round 1 · vs 5º (peor seed perdedor)');
-  } else {
-    m4Html = pfPending('Lower Round 1 · vs 6º', seed6.short+' vs (pendiente Upper R1)');
-    m3Html = pfPending('Lower Round 1 · vs 5º', seed5.short+' vs (pendiente Upper R1)');
+    m4Away = idx1 < idx2 ? loser1 : loser2; // mejor seed -> vs 6º
+    m3Away = idx1 < idx2 ? loser2 : loser1; // peor seed -> vs 5º
   }
+  pfValidateWinner('m4', seed6, m4Away);
+  pfValidateWinner('m3', seed5, m3Away);
+  const w3 = bracketPicks.m3 && bracketPicks.m3.winner;
+  const w4 = bracketPicks.m4 && bracketPicks.m4.winner;
+  const m4Html = pfMatchCard('m4', seed6, m4Away, w4, 'Lower Round 1 · vs 6º (mejor seed perdedor)');
+  const m3Html = pfMatchCard('m3', seed5, m3Away, w3, 'Lower Round 1 · vs 5º (peor seed perdedor)');
 
-  let m5Html;
-  if(w1 && w2) m5Html = pfMatchCard('m5', TEAM_MAP[w1], TEAM_MAP[w2], bracketPicks.m5 && bracketPicks.m5.winner, 'Upper Round 2');
-  else m5Html = pfPending('Upper Round 2', 'Ganador P1 vs Ganador P2');
+  // Upper Round 2
+  const m5Home = w1 ? TEAM_MAP[w1] : null, m5Away = w2 ? TEAM_MAP[w2] : null;
+  pfValidateWinner('m5', m5Home, m5Away);
+  const w5 = bracketPicks.m5 && bracketPicks.m5.winner;
+  const m5Html = pfMatchCard('m5', m5Home, m5Away, w5, 'Upper Round 2');
 
-  const w3 = bracketPicks.m3 && bracketPicks.m3.winner, w4 = bracketPicks.m4 && bracketPicks.m4.winner;
-  let m6Html;
-  if(w3 && w4) m6Html = pfMatchCard('m6', TEAM_MAP[w4], TEAM_MAP[w3], bracketPicks.m6 && bracketPicks.m6.winner, 'Lower Round 2');
-  else m6Html = pfPending('Lower Round 2', 'Ganador M3 vs Ganador M4');
+  // Lower Round 2
+  const m6Home = w4 ? TEAM_MAP[w4] : null, m6Away = w3 ? TEAM_MAP[w3] : null;
+  pfValidateWinner('m6', m6Home, m6Away);
+  const w6 = bracketPicks.m6 && bracketPicks.m6.winner;
+  const m6Html = pfMatchCard('m6', m6Home, m6Away, w6, 'Lower Round 2');
 
-  const w5 = bracketPicks.m5 && bracketPicks.m5.winner, w6 = bracketPicks.m6 && bracketPicks.m6.winner;
-  let m7Html;
-  if(w5 && w6){
-    const loser5 = w5 === w1 ? TEAM_MAP[w2] : TEAM_MAP[w1];
-    m7Html = pfMatchCard('m7', loser5, TEAM_MAP[w6], bracketPicks.m7 && bracketPicks.m7.winner, 'Lower Round 3');
-  } else {
-    m7Html = pfPending('Lower Round 3', 'Perdedor M5 vs Ganador M6');
-  }
-
+  // Lower Round 3 — el perdedor de M5 solo se conoce si YA se conocen los dos
+  // equipos de Upper Round 2 (w1 y w2), aunque w5 ya estuviera marcado antes.
+  const m7Home = (w1 && w2) ? (w5 === w1 ? TEAM_MAP[w2] : TEAM_MAP[w1]) : null;
+  const m7Away = w6 ? TEAM_MAP[w6] : null;
+  pfValidateWinner('m7', m7Home, m7Away);
   const w7 = bracketPicks.m7 && bracketPicks.m7.winner;
-  let m8Html;
-  if(w5 && w7) m8Html = pfMatchCard('m8', TEAM_MAP[w5], TEAM_MAP[w7], bracketPicks.m8 && bracketPicks.m8.winner, 'Split Final');
-  else m8Html = pfPending('Split Final', 'Ganador M5 vs Ganador M7');
+  const m7Html = pfMatchCard('m7', m7Home, m7Away, w7, 'Lower Round 3');
+
+  // Split Final
+  const m8Home = w5 ? TEAM_MAP[w5] : null, m8Away = w7 ? TEAM_MAP[w7] : null;
+  pfValidateWinner('m8', m8Home, m8Away);
+  const w8 = bracketPicks.m8 && bracketPicks.m8.winner;
+  const m8Html = pfMatchCard('m8', m8Home, m8Away, w8, 'Split Final');
 
   grid.innerHTML =
-      '<div class="bcol">'
-        +'<div class="bcol-label upper">Upper Round 1</div>'+choiceHtml+'<div class="bpair">'+m1Html+m2Html+'</div>'
-        +'<div class="bcol-label lower" style="margin-top:22px;">Lower Round 1</div><div class="bpair">'+m3Html+m4Html+'</div>'
-      +'</div>'
-    + '<div class="bcol bcol-mid">'
-        +'<div class="bcol-label upper">Upper Round 2</div>'+m5Html
-        +'<div class="bcol-label lower" style="margin-top:22px;">Lower Round 2</div>'+m6Html
-      +'</div>'
-    + '<div class="bcol bcol-mid"><div class="bcol-label lower">Lower Round 3</div>'+m7Html+'</div>'
-    + '<div class="bcol bcol-mid"><div class="bcol-label final">🏆 Split Final</div>'+m8Html+'</div>';
+      '<div class="bracket-upper">'
+        + '<div class="bcol"><div class="bcol-label upper">Upper Round 1</div>'+choiceHtml+'<div class="bpair">'+m1Html+m2Html+'</div></div>'
+        + '<div class="bcol bc-r2"><div class="bcol-label upper">Upper Round 2</div>'+m5Html+'</div>'
+        + '<div class="bcol"></div>'
+        + '<div class="bcol bc-final"><div class="bcol-label final">🏆 Split Final</div>'+m8Html+'</div>'
+      + '</div>'
+    + '<div class="bracket-divider"></div>'
+    + '<div class="bracket-lower">'
+        + '<div class="bcol"><div class="bcol-label lower">Lower Round 1</div><div class="bpair">'+m3Html+m4Html+'</div></div>'
+        + '<div class="bcol"><div class="bcol-label lower">Lower Round 2</div>'+m6Html+'</div>'
+        + '<div class="bcol"><div class="bcol-label lower">Lower Round 3</div>'+m7Html+'</div>'
+        + '<div class="bcol"></div>'
+      + '</div>';
 }
 
 document.getElementById('pfBracketGrid').addEventListener('click', (e)=>{
@@ -1616,7 +1636,6 @@ document.getElementById('pfBracketGrid').addEventListener('click', (e)=>{
   if(choiceEl){
     if(bracketPicks.choice !== choiceEl.dataset.choice){
       bracketPicks.choice = choiceEl.dataset.choice;
-      clearBracketDownstream('choice');
       saveBracketPicks(); renderPlayoffBracket();
     }
     return;
@@ -1627,7 +1646,6 @@ document.getElementById('pfBracketGrid').addEventListener('click', (e)=>{
     const current = bracketPicks[mkey] && bracketPicks[mkey].winner;
     if(current !== teamId){
       bracketPicks[mkey] = { winner: teamId };
-      clearBracketDownstream(mkey);
       saveBracketPicks(); renderPlayoffBracket();
     }
     return;
@@ -1712,7 +1730,7 @@ function triggerMonteCarlo(isAuto){
   document.getElementById('mcStatus').textContent = (isAuto ? 'Cargando automáticamente · ' : 'Calculando con ')
     + lockedNow + ' partidas fijadas... esto tarda un instante.';
   setTimeout(()=>{
-    runMonteCarlo(200000);
+    runMonteCarlo(100000);
     btn.disabled = false;
     btn.textContent = '🔁 Repetir 100K simulaciones';
   }, 30);
